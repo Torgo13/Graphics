@@ -128,7 +128,7 @@ namespace UnityEngine.Rendering.Universal
         internal RTHandle m_CameraDepthAttachment;
         RTHandle m_XRTargetHandleAlias;
         internal RTHandle m_DepthTexture;
-        RTHandle m_NormalsTexture;
+        public RTHandle m_NormalsTexture;
         RTHandle m_DecalLayersTexture;
         RTHandle m_OpaqueColor;
         RTHandle m_MotionVectorColor;
@@ -136,7 +136,7 @@ namespace UnityEngine.Rendering.Universal
 
         ForwardLights m_ForwardLights;
         DeferredLights m_DeferredLights;
-        RenderingMode m_RenderingMode;
+        public RenderingMode m_RenderingMode;
         DepthPrimingMode m_DepthPrimingMode;
         CopyDepthMode m_CopyDepthMode;
         bool m_DepthPrimingRecommended;
@@ -576,7 +576,7 @@ namespace UnityEngine.Rendering.Universal
             var createColorTexture = ((rendererFeatures.Count != 0 && m_IntermediateTextureMode == IntermediateTextureMode.Always) && !isPreviewCamera) ||
                 (Application.isEditor && m_Clustering);
 
-            // Gather render passe input requirements
+            // Gather render pass input requirements
             RenderPassInputSummary renderPassInputs = GetRenderPassInputs(ref renderingData);
 
             // Gather render pass require rendering layers event and mask size
@@ -1150,12 +1150,12 @@ namespace UnityEngine.Rendering.Universal
                 colorDesc.graphicsFormat = MotionVectorRenderPass.k_TargetFormat;
                 colorDesc.depthBufferBits = (int)DepthBits.None;
                 colorDesc.msaaSamples = 1;  // Disable MSAA, consider a pixel resolve for half left velocity and half right velocity --> no velocity, which is untrue.
-                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorColor, colorDesc, FilterMode.Point, TextureWrapMode.Clamp, name: "_MotionVectorTexture");
+                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorColor, colorDesc, FilterMode.Point, TextureWrapMode.Clamp, name: MotionVectorRenderPass.k_MotionVectorTextureName);
 
                 var depthDescriptor = cameraTargetDescriptor;
                 depthDescriptor.graphicsFormat = GraphicsFormat.None;
                 depthDescriptor.msaaSamples = 1;
-                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorDepth, depthDescriptor, FilterMode.Point, TextureWrapMode.Clamp, name: "_MotionVectorDepthTexture");
+                RenderingUtils.ReAllocateIfNeeded(ref m_MotionVectorDepth, depthDescriptor, FilterMode.Point, TextureWrapMode.Clamp, name: MotionVectorRenderPass.k_MotionVectorDepthTextureName);
 
                 m_MotionVectorPass.Setup(m_MotionVectorColor, m_MotionVectorDepth);
                 EnqueuePass(m_MotionVectorPass);
