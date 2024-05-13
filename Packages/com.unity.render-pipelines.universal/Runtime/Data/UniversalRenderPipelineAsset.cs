@@ -86,7 +86,12 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Use this for 4096x4096 shadow resolution.
         /// </summary>
-        _4096 = 4096
+        _4096 = 4096,
+
+        /// <summary>
+        /// Use this for 8192x8192 shadow resolution.
+        /// </summary>
+        _8192 = 8192,
     }
 
     /// <summary>
@@ -430,7 +435,7 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] internal ScriptableRendererData m_RendererData = null;
 
         // Renderer settings
-        [SerializeField] internal ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
+        [SerializeField] public ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
         [SerializeField] internal int m_DefaultRendererIndex = 0;
 
         // General settings
@@ -592,6 +597,16 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public static readonly int AdditionalLightsDefaultShadowResolutionTierHigh = 1024;
 
+        /// <summary>
+        /// The list of renderer data used by this pipeline asset.
+        /// </summary>
+        public ReadOnlySpan<ScriptableRendererData> rendererDataList => m_RendererDataList;
+
+        /// <summary>
+        /// The list of renderers used by this pipeline asset.
+        /// </summary>
+        public ReadOnlySpan<ScriptableRenderer> renderers => m_Renderers;
+
 #if UNITY_EDITOR
         [NonSerialized]
         internal UniversalRenderPipelineEditorResources m_EditorResourcesAsset;
@@ -723,12 +738,15 @@ namespace UnityEngine.Rendering.Universal
             if (m_RendererDataList == null)
                 m_RendererDataList = new ScriptableRendererData[1];
 
+            if (m_DefaultRendererIndex >= m_RendererDataList.Length)
+                m_DefaultRendererIndex = 0;
+
             // If no default data we can't create pipeline instance
             if (m_RendererDataList[m_DefaultRendererIndex] == null)
             {
                 // If previous version and current version are miss-matched then we are waiting for the upgrader to kick in
                 if (k_AssetPreviousVersion != k_AssetVersion)
-                    return null;
+                    return null;                
 
                 if (m_RendererDataList[m_DefaultRendererIndex].GetType().ToString()
                     .Contains("Universal.ForwardRendererData"))
@@ -1025,6 +1043,7 @@ namespace UnityEngine.Rendering.Universal
         public Downsampling opaqueDownsampling
         {
             get { return m_OpaqueDownsampling; }
+            set { m_OpaqueDownsampling = value; }
         }
 
         /// <summary>
@@ -1098,6 +1117,7 @@ namespace UnityEngine.Rendering.Universal
         public LODCrossFadeDitheringType lodCrossFadeDitheringType
         {
             get { return m_LODCrossFadeDitheringType; }
+            set { m_LODCrossFadeDitheringType = value; }
         }
 
         /// <summary>
@@ -1158,7 +1178,7 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsMainLightShadows
         {
             get { return m_MainLightShadowsSupported; }
-            internal set {
+            set {
                 m_MainLightShadowsSupported = value;
 #if UNITY_EDITOR
                 m_AnyShadowsSupported = m_MainLightShadowsSupported || m_AdditionalLightShadowsSupported;
@@ -1172,7 +1192,7 @@ namespace UnityEngine.Rendering.Universal
         public int mainLightShadowmapResolution
         {
             get { return (int)m_MainLightShadowmapResolution; }
-            internal set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
+            set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
         }
 
         /// <summary>
@@ -1364,13 +1384,13 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsSoftShadows
         {
             get { return m_SoftShadowsSupported; }
-            internal set { m_SoftShadowsSupported = value; }
+            set { m_SoftShadowsSupported = value; }
         }
 
         /// <summary>
         /// Light default Soft Shadow Quality.
         /// </summary>
-        internal SoftShadowQuality softShadowQuality
+        public SoftShadowQuality softShadowQuality
         {
             get { return m_SoftShadowQuality; }
             set { m_SoftShadowQuality = value; }
@@ -1478,6 +1498,7 @@ namespace UnityEngine.Rendering.Universal
         public bool useFastSRGBLinearConversion
         {
             get { return m_UseFastSRGBLinearConversion; }
+            set { m_UseFastSRGBLinearConversion = value; }
         }
         
         /// <summary>

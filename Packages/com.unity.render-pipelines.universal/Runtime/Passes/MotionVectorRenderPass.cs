@@ -8,6 +8,9 @@ namespace UnityEngine.Rendering.Universal
     sealed class MotionVectorRenderPass : ScriptableRenderPass
     {
         #region Fields
+        internal const string k_MotionVectorTextureName = "_MotionVectorTexture";
+        internal const string k_MotionVectorDepthTextureName = "_MotionVectorDepthTexture";
+        
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
 #if ENABLE_VR && ENABLE_XR_MODULE
