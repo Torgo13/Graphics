@@ -11,6 +11,8 @@ namespace UnityEditor.Rendering.Universal
     {
         public static readonly Dictionary<Type, List<MethodInfo>> MaterialReferenceLookup;
 
+        const string k_shared = "shared";
+
         static MaterialReferenceBuilder()
         {
             MaterialReferenceLookup = GetMaterialReferenceLookup();
@@ -152,10 +154,10 @@ namespace UnityEditor.Rendering.Universal
 
             // if there is a sharedMaterial property or sharedMaterials property, remove the property that will leak materials
             var sharedMaterialProps =
-                materialProps.Where(prop => prop.Name.ToLowerInvariant().Contains("shared")).ToList();
+                materialProps.Where(prop => prop.Name.Contains(k_shared, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
             var propsToRemove = sharedMaterialProps
-                .Select(prop => prop.Name.ToLowerInvariant().Replace("shared", string.Empty))
+                .Select(prop => prop.Name.ToLowerInvariant().Replace(k_shared, string.Empty))
                 .ToList();
             materialProps.RemoveAll(prop => propsToRemove.Contains(prop.Name.ToLowerInvariant()));
 
