@@ -855,7 +855,7 @@ namespace UnityEditor.ShaderGraph
             blockNode.contextData = contextData;
 
             // Add to ContextData
-            if (index == -1 || index >= contextData.blocks.Count())
+            if (index == -1 || index >= contextData.blocks.Count)
             {
                 contextData.blocks.Add(blockNode);
             }
@@ -2832,7 +2832,7 @@ namespace UnityEditor.ShaderGraph
 
         internal void ValidateCustomBlockLimit()
         {
-            if (m_ActiveTargets.Count() == 0)
+            if (m_ActiveTargets.Count == 0)
                 return;
 
             int nonCustomUsage = 0;
@@ -2845,7 +2845,7 @@ namespace UnityEditor.ShaderGraph
                     nonCustomUsage += 4;
                 else nonCustomUsage += bnode.descriptor.vectorCount;
             }
-            int maxTargetUsage = m_ActiveTargets.Select(jt => jt.value.padCustomInterpolatorLimit).Max() * 4;
+            int maxTargetUsage = m_ActiveTargets.Max(jt => jt.value.padCustomInterpolatorLimit) * 4;
 
             int padding = nonCustomUsage + maxTargetUsage;
 
@@ -2904,7 +2904,7 @@ namespace UnityEditor.ShaderGraph
             slotStack.Push(initialSlot);
 
             // Trace back and find any edges that introduce an error
-            while (slotStack.Any())
+            while (slotStack.Count > 0)
             {
                 var slot = slotStack.Pop();
 
