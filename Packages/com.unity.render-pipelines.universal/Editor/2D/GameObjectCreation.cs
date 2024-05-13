@@ -40,10 +40,9 @@ namespace UnityEditor.Rendering.Universal
             {
                 var transform = go.transform;
                 Undo.SetTransformParent(transform, parentTransform.transform, "Reparenting");
-                transform.localPosition = Vector3.zero;
-                transform.localRotation = Quaternion.identity;
+                transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
                 transform.localScale = Vector3.one;
-                go.layer = parentTransform.gameObject.layer;
+                go.layer = parentTransform.layer;
 
                 if (parentTransform.GetComponent<RectTransform>())
                     ObjectFactory.AddComponent<RectTransform>(go);
