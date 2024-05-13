@@ -284,15 +284,19 @@ namespace UnityEngine.Rendering
                 return l * l / (d * (d * d + l * l));
             }
 
-            Vector3 p1Global = lightPositionWS + lightSide * lightWidth * 0.5f;
-            Vector3 p2Global = lightPositionWS - lightSide * lightWidth * 0.5f;
-            Vector3 p1Front = lightPositionWS + cam.transform.right * lightWidth * 0.5f;
-            Vector3 p2Front = lightPositionWS - cam.transform.right * lightWidth * 0.5f;
+            Transform camTransform = cam.transform;
+            Vector3 right = 0.5f * lightWidth * camTransform.right;
+            Vector3 side = 0.5f * lightWidth * lightSide;
 
-            Vector3 p1World = cam.transform.InverseTransformPoint(p1Global);
-            Vector3 p2World = cam.transform.InverseTransformPoint(p2Global);
-            Vector3 p1WorldFront = cam.transform.InverseTransformPoint(p1Front);
-            Vector3 p2WorldFront = cam.transform.InverseTransformPoint(p2Front);
+            Vector3 p1Global = lightPositionWS + side;
+            Vector3 p2Global = lightPositionWS - side;
+            Vector3 p1Front = lightPositionWS + right;
+            Vector3 p2Front = lightPositionWS - right;
+
+            Vector3 p1World = camTransform.InverseTransformPoint(p1Global);
+            Vector3 p2World = camTransform.InverseTransformPoint(p2Global);
+            Vector3 p1WorldFront = camTransform.InverseTransformPoint(p1Front);
+            Vector3 p2WorldFront = camTransform.InverseTransformPoint(p2Front);
 
             float DiffLineIntegral(Vector3 p1, Vector3 p2)
             {
