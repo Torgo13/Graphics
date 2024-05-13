@@ -107,7 +107,8 @@ namespace UnityEditor.Rendering.Universal
             {
                 for (int i = 0; i < targets.Length; i++)
                 {
-                    if ((ShadowCaster2D)targets[i].TryGetComponent<Renderer>(out var renderer))
+                    ShadowCaster2D shadowCaster = (ShadowCaster2D)targets[i];
+                    if (shadowCaster.TryGetComponent<Renderer>(out var renderer))
                         return true;
                 }
             }
