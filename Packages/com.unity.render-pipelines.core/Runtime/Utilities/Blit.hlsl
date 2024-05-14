@@ -7,7 +7,11 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GlobalSamplers.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
 
+#ifdef USE_FULL_PRECISION_BLIT_TEXTURE
+TEXTURE2D_X_FLOAT(_BlitTexture);
+#else
 TEXTURE2D_X(_BlitTexture);
+#endif
 TEXTURECUBE(_BlitCubeTexture);
 
 uniform float4 _BlitScaleBias;
