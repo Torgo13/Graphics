@@ -41,6 +41,7 @@ namespace UnityEngine.Rendering.Universal
             m_Renderer2DData = rendererData;
             m_BlitMaterial = blitMaterial;
             m_SamplingMaterial = samplingMaterial;
+            overrideCameraClear = true;
 
             m_CameraSortingLayerBoundsIndex = GetCameraSortingLayerBoundsIndex();
         }
@@ -249,15 +250,21 @@ namespace UnityEngine.Rendering.Universal
             var blendStylesCount = m_Renderer2DData.lightBlendStyles.Length;
             using (new ProfilingScope(cmd, m_ProfilingDrawRenderers))
             {
+                // Clear the target only when the first layer is rendered and this is the base camera (not camera overlay)
+                bool needsClear = ((startIndex == 0) && (renderingData.cameraData.renderType == CameraRenderType.Base));
                 RenderBufferStoreAction initialStoreAction;
                 if (msaaEnabled)
                     initialStoreAction = resolveDuringBatch < startIndex ? RenderBufferStoreAction.Resolve : RenderBufferStoreAction.StoreAndResolve;
                 else
                     initialStoreAction = RenderBufferStoreAction.Store;
                 CoreUtils.SetRenderTarget(cmd,
-                    colorAttachmentHandle, RenderBufferLoadAction.Load, initialStoreAction,
-                    depthAttachmentHandle, RenderBufferLoadAction.Load, initialStoreAction,
+                    colorAttachmentHandle, RenderBufferLoadAction.DontCare, initialStoreAction,
+                    depthAttachmentHandle, RenderBufferLoadAction.DontCare, initialStoreAction,
                     ClearFlag.None, Color.clear);
+                if (needsClear)
+                {
+                    CoreUtils.ClearRenderTarget(cmd, ClearFlag.All, CoreUtils.ConvertSRGBToActiveColorSpace(renderingData.cameraData.camera.backgroundColor));
+                }
 
                 for (var i = startIndex; i < startIndex + batchesDrawn; i++)
                 {
