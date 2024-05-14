@@ -452,6 +452,7 @@ A_STATIC void FsrEasuConOffset(
  AH4 FsrEasuRH(AF2 p);
  AH4 FsrEasuGH(AF2 p);
  AH4 FsrEasuBH(AF2 p);
+ AH3 FsrEasuSampleH(AF2 p);
  void FsrEasuProcessInput(inout AH4 r, inout AH4 g, inout AH4 b);
 //------------------------------------------------------------------------------------------------------------------------------
  // This runs 2 taps in parallel.
@@ -516,91 +517,92 @@ A_STATIC void FsrEasuConOffset(
  AU4 con2,
  AU4 con3){
 //------------------------------------------------------------------------------------------------------------------------------
+  // Direction is the '+' diff.
+  //    A
+  //  B C D
+  //    E
   AF2 pp=AF2(ip)*AF2_AU2(con0.xy)+AF2_AU2(con0.zw);
+  AF2 tc=(pp+AF2_(0.5))*AF2_AU2(con1.xy);
+  AH3 sA=FsrEasuSampleH(tc-AF2(0, AF1_AU1(con1.y)));
+  AH3 sB=FsrEasuSampleH(tc-AF2(AF1_AU1(con1.x), 0));
+  AH3 sC=FsrEasuSampleH(tc);
+  AH3 sD=FsrEasuSampleH(tc+AF2(AF1_AU1(con1.x), 0));
+  AH3 sE=FsrEasuSampleH(tc+AF2(0, AF1_AU1(con1.y)));
+  AH1 lA=sA.r*AH1_(0.5)+sA.g;
+  AH1 lB=sB.r*AH1_(0.5)+sB.g;
+  AH1 lC=sC.r*AH1_(0.5)+sC.g;
+  AH1 lD=sD.r*AH1_(0.5)+sD.g;
+  AH1 lE=sE.r*AH1_(0.5)+sE.g;
+  // Then takes magnitude from abs average of both sides of 'C'.
+  // Length converts gradient reversal to 0, smoothly to non-reversal at 1, shaped, then adding horz and vert terms.
+  AH1 dc=lD-lC;
+  AH1 cb=lC-lB;
+  AH1 lenX=max(abs(dc),abs(cb));
+  lenX=ARcpH1(lenX);
+  AH1 dirX=lD-lB;
+  lenX=ASatH1(abs(dirX)*lenX);
+  lenX*=lenX;
+  // Repeat for the y axis.
+  AH1 ec=lE-lC;
+  AH1 ca=lC-lA;
+  AH1 lenY=max(abs(ec),abs(ca));
+  lenY=ARcpH1(lenY);
+  AH1 dirY=lE-lA;
+  lenY=ASatH1(abs(dirY)*lenY);
+  AH1 len = lenY * lenY + lenX;
+  AH2 dir = AH2(dirX, dirY);
+ //------------------------------------------------------------------------------------------------------------------------------ 
+  AH2 dir2=dir*dir;
+  AH1 dirR=dir2.x+dir2.y;
+  if (dirR<AH1_(1.0/64.0)) {
+    pix = sC;
+    return;
+  }
+  dirR=ARsqH1(dirR);
+  dir*=AH2_(dirR);
+  len=len*AH1_(0.5);
+  len*=len;
+  AH1 stretch=(dir.x*dir.x+dir.y*dir.y)*ARcpH1(max(abs(dir.x),abs(dir.y)));
+  AH2 len2=AH2(AH1_(1.0)+(stretch-AH1_(1.0))*len,AH1_(1.0)+AH1_(-0.5)*len);
+  AH1 lob=AH1_(0.5)+AH1_((1.0/4.0-0.04)-0.5)*len;
+  AH1 clp=ARcpH1(lob);
+//------------------------------------------------------------------------------------------------------------------------------
   AF2 fp=floor(pp);
   pp-=fp;
   AH2 ppp=AH2(pp);
-//------------------------------------------------------------------------------------------------------------------------------
   AF2 p0=fp*AF2_AU2(con1.xy)+AF2_AU2(con1.zw);
   AF2 p1=p0+AF2_AU2(con2.xy);
   AF2 p2=p0+AF2_AU2(con2.zw);
   AF2 p3=p0+AF2_AU2(con3.xy);
-  AH4 bczzR=FsrEasuRH(p0);
-  AH4 bczzG=FsrEasuGH(p0);
-  AH4 bczzB=FsrEasuBH(p0);
-  FsrEasuProcessInput(bczzR, bczzG, bczzB);
+  p0.y-=AF1_AU1(con1.w); p3.y+=AF1_AU1(con1.w);
+  AH4 fgcbR=FsrEasuRH(p0);
+  AH4 fgcbG=FsrEasuGH(p0);
+  AH4 fgcbB=FsrEasuBH(p0);
   AH4 ijfeR=FsrEasuRH(p1);
   AH4 ijfeG=FsrEasuGH(p1);
   AH4 ijfeB=FsrEasuBH(p1);
-  FsrEasuProcessInput(ijfeR, ijfeG, ijfeB);
   AH4 klhgR=FsrEasuRH(p2);
   AH4 klhgG=FsrEasuGH(p2);
   AH4 klhgB=FsrEasuBH(p2);
-  FsrEasuProcessInput(klhgR, klhgG, klhgB);
-  AH4 zzonR=FsrEasuRH(p3);
-  AH4 zzonG=FsrEasuGH(p3);
-  AH4 zzonB=FsrEasuBH(p3);
-  FsrEasuProcessInput(zzonR, zzonG, zzonB);
+  AH4 nokjR=FsrEasuRH(p3);
+  AH4 nokjG=FsrEasuGH(p3);
+  AH4 nokjB=FsrEasuBH(p3);
 //------------------------------------------------------------------------------------------------------------------------------
-  AH4 bczzL=bczzB*AH4_(0.5)+(bczzR*AH4_(0.5)+bczzG);
-  AH4 ijfeL=ijfeB*AH4_(0.5)+(ijfeR*AH4_(0.5)+ijfeG);
-  AH4 klhgL=klhgB*AH4_(0.5)+(klhgR*AH4_(0.5)+klhgG);
-  AH4 zzonL=zzonB*AH4_(0.5)+(zzonR*AH4_(0.5)+zzonG);
-  AH1 bL=bczzL.x;
-  AH1 cL=bczzL.y;
-  AH1 iL=ijfeL.x;
-  AH1 jL=ijfeL.y;
-  AH1 fL=ijfeL.z;
-  AH1 eL=ijfeL.w;
-  AH1 kL=klhgL.x;
-  AH1 lL=klhgL.y;
-  AH1 hL=klhgL.z;
-  AH1 gL=klhgL.w;
-  AH1 oL=zzonL.z;
-  AH1 nL=zzonL.w;
-  // This part is different, accumulating 2 taps in parallel.
-  AH2 dirPX=AH2_(0.0);
-  AH2 dirPY=AH2_(0.0);
-  AH2 lenP=AH2_(0.0);
-  FsrEasuSetH(dirPX,dirPY,lenP,ppp,true, false,AH2(bL,cL),AH2(eL,fL),AH2(fL,gL),AH2(gL,hL),AH2(jL,kL));
-  FsrEasuSetH(dirPX,dirPY,lenP,ppp,false,true ,AH2(fL,gL),AH2(iL,jL),AH2(jL,kL),AH2(kL,lL),AH2(nL,oL));
-  AH2 dir=AH2(dirPX.r+dirPX.g,dirPY.r+dirPY.g);
-  AH1 len=lenP.r+lenP.g;
-//------------------------------------------------------------------------------------------------------------------------------
-  AH2 dir2=dir*dir;
-  AH1 dirR=dir2.x+dir2.y;
-  AP1 zro=dirR<AH1_(1.0/32768.0);
-  dirR=APrxLoRsqH1(dirR);
-  dirR=zro?AH1_(1.0):dirR;
-  dir.x=zro?AH1_(1.0):dir.x;
-  dir*=AH2_(dirR);
-  len=len*AH1_(0.5);
-  len*=len;
-  AH1 stretch=(dir.x*dir.x+dir.y*dir.y)*APrxLoRcpH1(max(abs(dir.x),abs(dir.y)));
-  AH2 len2=AH2(AH1_(1.0)+(stretch-AH1_(1.0))*len,AH1_(1.0)+AH1_(-0.5)*len);
-  AH1 lob=AH1_(0.5)+AH1_((1.0/4.0-0.04)-0.5)*len;
-  AH1 clp=APrxLoRcpH1(lob);
-//------------------------------------------------------------------------------------------------------------------------------
-  // FP16 is different, using packed trick to do min and max in same operation.
-  AH2 bothR=max(max(AH2(-ijfeR.z,ijfeR.z),AH2(-klhgR.w,klhgR.w)),max(AH2(-ijfeR.y,ijfeR.y),AH2(-klhgR.x,klhgR.x)));
-  AH2 bothG=max(max(AH2(-ijfeG.z,ijfeG.z),AH2(-klhgG.w,klhgG.w)),max(AH2(-ijfeG.y,ijfeG.y),AH2(-klhgG.x,klhgG.x)));
-  AH2 bothB=max(max(AH2(-ijfeB.z,ijfeB.z),AH2(-klhgB.w,klhgB.w)),max(AH2(-ijfeB.y,ijfeB.y),AH2(-klhgB.x,klhgB.x)));
   // This part is different for FP16, working pairs of taps at a time.
   AH2 pR=AH2_(0.0);
   AH2 pG=AH2_(0.0);
   AH2 pB=AH2_(0.0);
   AH2 pW=AH2_(0.0);
-  FsrEasuTapH(pR,pG,pB,pW,AH2( 0.0, 1.0)-ppp.xx,AH2(-1.0,-1.0)-ppp.yy,dir,len2,lob,clp,bczzR.xy,bczzG.xy,bczzB.xy);
+  FsrEasuTapH(pR,pG,pB,pW,AH2( 1.0, 0.0)-ppp.xx,AH2(-1.0,-1.0)-ppp.yy,dir,len2,lob,clp,fgcbR.zw,fgcbG.zw,fgcbB.zw);
   FsrEasuTapH(pR,pG,pB,pW,AH2(-1.0, 0.0)-ppp.xx,AH2( 1.0, 1.0)-ppp.yy,dir,len2,lob,clp,ijfeR.xy,ijfeG.xy,ijfeB.xy);
   FsrEasuTapH(pR,pG,pB,pW,AH2( 0.0,-1.0)-ppp.xx,AH2( 0.0, 0.0)-ppp.yy,dir,len2,lob,clp,ijfeR.zw,ijfeG.zw,ijfeB.zw);
   FsrEasuTapH(pR,pG,pB,pW,AH2( 1.0, 2.0)-ppp.xx,AH2( 1.0, 1.0)-ppp.yy,dir,len2,lob,clp,klhgR.xy,klhgG.xy,klhgB.xy);
   FsrEasuTapH(pR,pG,pB,pW,AH2( 2.0, 1.0)-ppp.xx,AH2( 0.0, 0.0)-ppp.yy,dir,len2,lob,clp,klhgR.zw,klhgG.zw,klhgB.zw);
-  FsrEasuTapH(pR,pG,pB,pW,AH2( 1.0, 0.0)-ppp.xx,AH2( 2.0, 2.0)-ppp.yy,dir,len2,lob,clp,zzonR.zw,zzonG.zw,zzonB.zw);
+  FsrEasuTapH(pR,pG,pB,pW,AH2( 0.0, 1.0)-ppp.xx,AH2( 2.0, 2.0)-ppp.yy,dir,len2,lob,clp,nokjR.xy,nokjG.xy,nokjB.xy);
   AH3 aC=AH3(pR.x+pR.y,pG.x+pG.y,pB.x+pB.y);
   AH1 aW=pW.x+pW.y;
 //------------------------------------------------------------------------------------------------------------------------------
-  // Slightly different for FP16 version due to combined min and max.
-  pix=min(AH3(bothR.y,bothG.y,bothB.y),max(-AH3(bothR.x,bothG.x,bothB.x),aC*AH3_(ARcpH1(aW))));}
+  pix=aC*AH3_(ARcpH1(aW));}
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

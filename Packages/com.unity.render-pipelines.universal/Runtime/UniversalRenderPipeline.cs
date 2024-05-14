@@ -1766,6 +1766,13 @@ namespace UnityEngine.Rendering.Universal
 
                     break;
                 }
+
+                case UpscalingFilterSelection.SGSR:
+                {
+                    filter = ImageUpscalingFilter.SGSR;
+
+                    break;
+                }
             }
 
             return filter;

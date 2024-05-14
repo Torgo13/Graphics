@@ -73,7 +73,10 @@ namespace UnityEngine.Rendering.Universal
         Point,
 
         /// FidelityFX Super Resolution
-        FSR
+        FSR,
+
+        /// Snapdragon Game Super Resolution
+        SGSR
     }
 
     /// <summary>
@@ -1203,9 +1206,12 @@ namespace UnityEngine.Rendering.Universal
         /// <summary> Keyword used for Robust Contrast-Adaptive Sharpening (RCAS) when doing upsampling. </summary>
         public const string Rcas = "_RCAS";
 
-        /// <summary> Keyword used for Robust Contrast-Adaptive Sharpening (RCAS) when doing upsampling, after EASU has ran and with HDR Dsiplay output. </summary>
+        /// <summary> Keyword used for Robust Contrast-Adaptive Sharpening (RCAS) when doing upsampling, after EASU has ran and with HDR Display output. </summary>
         public const string EasuRcasAndHDRInput = "_EASU_RCAS_AND_HDR_INPUT";
 
+        /// <summary> Keyword used for Snapdragon Game Super Resolution. </summary>
+        public const string Sgsr = "_SGSR";
+        
         /// <summary> Keyword used for Gamma 2.0. </summary>
         public const string Gamma20 = "_GAMMA_20";
 
