@@ -83,7 +83,7 @@ AH4 FsrEasuBH(AF2 p)
 }
 AH3 FsrEasuSampleH(AF2 p)
 {
-    return (AH3)SAMPLE_TEXTURE2D_X(FSR_INPUT_TEXTURE, FSR_INPUT_SAMPLER, p, 0).xyz;
+    return (AH3)SAMPLE_TEXTURE2D(FSR_INPUT_TEXTURE, FSR_INPUT_SAMPLER, p);
 }
 
 void FsrEasuProcessInput(inout AH4 r, inout AH4 g, inout AH4 b)
