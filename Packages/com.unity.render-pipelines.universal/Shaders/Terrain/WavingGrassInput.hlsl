@@ -24,7 +24,7 @@ CBUFFER_START(TerrainGrass)
 CBUFFER_END
 
 TEXTURE2D(_MainTex);
-SAMPLER(sampler_MainTex);
+SAMPLER(sampler_point_repeat);
 float4 _MainTex_TexelSize;
 float4 _MainTex_MipInfo;
 
