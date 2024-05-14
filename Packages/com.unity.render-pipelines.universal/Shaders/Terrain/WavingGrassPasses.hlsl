@@ -45,7 +45,9 @@ void InitializeInputData(GrassVertexOutput input, out InputData inputData)
     inputData.positionWS = input.posWSShininess.xyz;
 
     half3 viewDirWS = input.viewDir;
+#if !defined(SHADER_API_MOBILE)
     viewDirWS = SafeNormalize(viewDirWS);
+#endif
 
     inputData.normalWS = NormalizeNormalPerPixel(input.normal);
     inputData.viewDirectionWS = viewDirWS;
@@ -97,11 +99,24 @@ void InitializeVertData(GrassVertexInput input, inout GrassVertexOutput vertData
     vertData.uv = input.texcoord;
     vertData.posWSShininess.xyz = vertexInput.positionWS;
     vertData.posWSShininess.w = 32;
-    vertData.clipPos = vertexInput.positionCS;
+
+    // Make quad look at camera in view space
+    float3 quadPivotPosVS = TransformWorldToView(vertexInput.positionWS);
+    // Get transform.lossyScale
+    float2 scaleXY_WS = float2(
+        length(unity_ObjectToWorld._m00_m10_m20), // scale x axis
+        length(unity_ObjectToWorld._m01_m11_m21)); // scale y axis
+    float3 posVS = quadPivotPosVS + float3(input.texcoord.xy * scaleXY_WS * input.tangent.xy, 0); // Reconstruct quad 4 points in view space
+    posVS.xy += input.tangent.xy;
+    // Complete SV_POSITION's view space to HClip space transformation
+    vertData.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
+    //vertData.clipPos = vertexInput.positionCS;
 
     vertData.viewDir = GetCameraPositionWS() - vertexInput.positionWS;
-
+    
+#if !defined(SHADER_API_MOBILE)
     vertData.viewDir = SafeNormalize(vertData.viewDir);
+#endif
 
     vertData.normal = TransformObjectToWorldNormal(input.normal);
 
@@ -160,7 +175,7 @@ GrassVertexOutput WavingGrassBillboardVert(GrassVertexInput v)
     UNITY_TRANSFER_INSTANCE_ID(v, o);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    TerrainBillboardGrass (v.vertex, v.tangent.xy);
+    //TerrainBillboardGrass (v.vertex, v.tangent.xy);
     // wave amount defined by the grass height
     float waveAmount = v.tangent.y;
     o.color = TerrainWaveGrass (v.vertex, waveAmount, v.color);
@@ -172,7 +187,7 @@ GrassVertexOutput WavingGrassBillboardVert(GrassVertexInput v)
 
 inline void InitializeSimpleLitSurfaceData(GrassVertexOutput input, out SurfaceData outSurfaceData)
 {
-    half4 diffuseAlpha = SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_MainTex));
+    half4 diffuseAlpha = SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_repeat));
     half3 diffuse = diffuseAlpha.rgb * input.color.rgb;
 
     half alpha = diffuseAlpha.a * input.color.a;
@@ -239,7 +254,18 @@ void InitializeVertData(GrassVertexDepthOnlyInput input, inout GrassVertexDepthO
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.vertex.xyz);
 
     vertData.uv = input.texcoord;
-    vertData.clipPos = vertexInput.positionCS;
+
+    // Make quad look at camera in view space
+    float3 quadPivotPosVS = TransformWorldToView(vertexInput.positionWS);
+    // Get transform.lossyScale
+    float2 scaleXY_WS = float2(
+        length(unity_ObjectToWorld._m00_m10_m20), // scale x axis
+        length(unity_ObjectToWorld._m01_m11_m21)); // scale y axis
+    float3 posVS = quadPivotPosVS + float3(input.texcoord.xy * scaleXY_WS * input.tangent.xy, 0); // Reconstruct quad 4 points in view space
+    posVS.xy += input.tangent.xy;
+    // Complete SV_POSITION's view space to HClip space transformation
+    vertData.clipPos = mul(GetViewToHClipMatrix(), float4(posVS, 1));
+    //vertData.clipPos = vertexInput.positionCS;
 }
 
 GrassVertexDepthOnlyOutput DepthOnlyVertex(GrassVertexDepthOnlyInput v)
@@ -259,9 +285,27 @@ GrassVertexDepthOnlyOutput DepthOnlyVertex(GrassVertexDepthOnlyInput v)
     return o;
 }
 
+GrassVertexDepthOnlyOutput DepthOnlyBillboardVertex(GrassVertexDepthOnlyInput v)
+{
+    GrassVertexDepthOnlyOutput o = (GrassVertexDepthOnlyOutput) 0;
+    UNITY_SETUP_INSTANCE_ID(v);
+    UNITY_TRANSFER_INSTANCE_ID(v, o);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
+    //TerrainBillboardGrass (v.vertex, v.tangent.xy);
+
+    // wave amount defined by the grass height
+    float waveAmount = v.tangent.y;
+    o.color = TerrainWaveGrass(v.vertex, waveAmount, v.color);
+
+    InitializeVertData(v, o);
+
+    return o;
+}
+
 half4 DepthOnlyFragment(GrassVertexDepthOnlyOutput input) : SV_TARGET
 {
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_MainTex)).a, input.color, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_repeat)).a, input.color, _Cutoff);
     return input.clipPos.z;
 }
 #endif
