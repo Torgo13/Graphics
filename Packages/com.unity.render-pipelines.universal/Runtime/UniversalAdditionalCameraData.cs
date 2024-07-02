@@ -123,7 +123,12 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Use this to select the high <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
         /// </summary>
-        High
+        High,
+
+        /// <summary>
+        /// Use this to select the ultra <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
+        /// </summary>
+        Ultra
     }
 
     /// <summary>

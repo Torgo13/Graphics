@@ -187,7 +187,7 @@ GrassVertexOutput WavingGrassBillboardVert(GrassVertexInput v)
 
 inline void InitializeSimpleLitSurfaceData(GrassVertexOutput input, out SurfaceData outSurfaceData)
 {
-    half4 diffuseAlpha = SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_repeat));
+    half4 diffuseAlpha = SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_clamp));
     half3 diffuse = diffuseAlpha.rgb * input.color.rgb;
 
     half alpha = diffuseAlpha.a * input.color.a;
@@ -305,7 +305,7 @@ GrassVertexDepthOnlyOutput DepthOnlyBillboardVertex(GrassVertexDepthOnlyInput v)
 
 half4 DepthOnlyFragment(GrassVertexDepthOnlyOutput input) : SV_TARGET
 {
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_repeat)).a, input.color, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_clamp)).a, input.color, _Cutoff);
     return input.clipPos.z;
 }
 #endif

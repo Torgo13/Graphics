@@ -474,7 +474,7 @@ namespace UnityEngine.Rendering.Universal
                 camera.targetTexture = temporaryRT ? temporaryRT : destination;
 
 
-                using (ListPool<Camera>.Get(out var tmp))
+                using (UnityEngine.Pool.ListPool<Camera>.Get(out var tmp))
                 {
                     tmp.Add(camera);
                     if (standardRequest != null)

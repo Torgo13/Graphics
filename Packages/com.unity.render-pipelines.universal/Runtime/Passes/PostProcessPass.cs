@@ -694,6 +694,9 @@ namespace UnityEngine.Rendering.Universal
                 case AntialiasingQuality.High:
                     material.EnableKeyword(ShaderKeywordStrings.SmaaHigh);
                     break;
+                case AntialiasingQuality.Ultra:
+                    material.EnableKeyword(ShaderKeywordStrings.SmaaUltra);
+                    break;
             }
 
             // Pass 1: Edge detection

@@ -91,7 +91,7 @@ GrassVertexDepthNormalOutput DepthNormalOnlyBillboardVertex(GrassVertexDepthNorm
 
 half4 DepthNormalOnlyFragment(GrassVertexDepthNormalOutput input) : SV_TARGET
 {
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_repeat)).a, input.color, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_MainTex, sampler_point_clamp)).a, input.color, _Cutoff);
     #if defined(_GBUFFER_NORMALS_OCT)
         float3 normalWS = NormalizeNormalPerPixel(input.normal);
         float2 octNormalWS = PackNormalOctQuadEncode(normalWS);           // values between [-1, +1], must use fp32 on Nintendo Switch.

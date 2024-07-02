@@ -1166,6 +1166,9 @@ namespace UnityEngine.Rendering.Universal
         /// <summary> Keyword used for high quality Subpixel Morphological Anti-aliasing (SMAA). </summary>
         public const string SmaaHigh = "_SMAA_PRESET_HIGH";
 
+        /// <summary> Keyword used for ultra quality Subpixel Morphological Anti-aliasing (SMAA). </summary>
+        public const string SmaaUltra = "_SMAA_PRESET_ULTRA";
+
         /// <summary> Keyword used for generic Panini Projection. </summary>
         public const string PaniniGeneric = "_GENERIC";
 

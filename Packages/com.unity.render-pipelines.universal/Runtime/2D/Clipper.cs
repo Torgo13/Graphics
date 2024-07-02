@@ -396,7 +396,7 @@ namespace UnityEngine.Rendering.Universal
         public override int GetHashCode()
         {
             //simply prevents a compiler warning
-            return base.GetHashCode();
+            return HashCode.Combine(N, X, Y, D, NX, NY);
         }
     }// end struct IntPoint
 
