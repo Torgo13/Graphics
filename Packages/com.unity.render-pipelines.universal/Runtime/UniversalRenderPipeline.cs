@@ -479,7 +479,7 @@ namespace UnityEngine.Rendering.Universal
                     tmp.Add(camera);
                     if (standardRequest != null)
                     {
-                        Render(context, tmp.ToArray());
+                        Render(context, tmp);
                     }
                     else
                     {
@@ -493,7 +493,7 @@ namespace UnityEngine.Rendering.Universal
                             BeginCameraRendering(context, camera);
                         }
 
-                        camera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
+                        var additionalCameraData = camera.gameObject.GetComponent<UniversalAdditionalCameraData>();
                         RenderSingleCameraInternal(context, camera, ref additionalCameraData);
 
                         using (new ProfilingScope(null, Profiling.Pipeline.endCameraRendering))
