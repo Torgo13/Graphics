@@ -119,6 +119,9 @@ namespace UnityEngine.Rendering
         static Texture2DArray m_WhiteTexture2DArray;
         static RTHandle m_WhiteTexture2DArrayRTH;
         static RTHandle m_WhiteTextureRTH;
+        static readonly int m_TargetArray = Shader.PropertyToID("_TargetArray");
+        static readonly int m_Target = Shader.PropertyToID("_Target");
+
         /// <summary>
         /// Default white texture.
         /// </summary>
@@ -211,7 +214,7 @@ namespace UnityEngine.Rendering
             // So we create a R32_UInt RenderTarget and clear it using a compute shader, because we can't
             // Clear this type of target on metal devices (output type nor compatible: float4 vs uint)
             int kernel = clearR32_UIntShader.FindKernel("ClearUIntTextureArray");
-            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, "_TargetArray", blackUIntTexture2DArray);
+            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, m_TargetArray, blackUIntTexture2DArray);
             cmd.DispatchCompute(clearR32_UIntShader, kernel, 1, 1, slices);
 
             return blackUIntTexture2DArray as Texture;
@@ -235,7 +238,7 @@ namespace UnityEngine.Rendering
             // So we create a R32_UInt RenderTarget and clear it using a compute shader, because we can't
             // Clear this type of target on metal devices (output type nor compatible: float4 vs uint)
             int kernel = clearR32_UIntShader.FindKernel("ClearUIntTexture");
-            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, "_Target", blackUIntTexture2D);
+            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, m_Target, blackUIntTexture2D);
             cmd.DispatchCompute(clearR32_UIntShader, kernel, 1, 1, 1);
 
             return blackUIntTexture2D as Texture;

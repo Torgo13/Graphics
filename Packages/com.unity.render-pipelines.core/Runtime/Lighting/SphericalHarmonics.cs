@@ -6,7 +6,7 @@ namespace UnityEngine.Rendering
     /// Structure holding Spherical Harmonic L1 coefficient.
     /// </summary>
     [Serializable]
-    public struct SphericalHarmonicsL1
+    public struct SphericalHarmonicsL1 : IEquatable<SphericalHarmonicsL1>
     {
         /// <summary>
         /// Red channel of each of the three L1 SH coefficient.
@@ -107,6 +107,11 @@ namespace UnityEngine.Rendering
         public static bool operator !=(SphericalHarmonicsL1 lhs, SphericalHarmonicsL1 rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public bool Equals(SphericalHarmonicsL1 other)
+        {
+            return this == other;
         }
 
         /// <summary>

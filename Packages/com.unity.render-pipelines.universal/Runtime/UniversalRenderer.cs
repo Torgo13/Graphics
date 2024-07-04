@@ -51,6 +51,11 @@ namespace UnityEngine.Rendering.Universal
         const int k_AfterFinalBlitPassQueueOffset = k_FinalBlitPassQueueOffset + 1;
 
         static readonly List<ShaderTagId> k_DepthNormalsOnly = new List<ShaderTagId> { new ShaderTagId("DepthNormalsOnly") };
+        static readonly int k_CameraColorTexture = Shader.PropertyToID("_CameraColorTexture");
+        static readonly int k_AfterPostProcessTexture = Shader.PropertyToID("_AfterPostProcessTexture");
+        static readonly int k_CameraRenderingLayersTexture = Shader.PropertyToID("_CameraRenderingLayersTexture");
+        static readonly int k_CameraNormalsTexture = Shader.PropertyToID("_CameraNormalsTexture");
+        static readonly int k_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
 
         private static class Profiling
         {
@@ -928,7 +933,7 @@ namespace UnityEngine.Rendering.Universal
                 cmd.SetGlobalTexture(renderingLayersTexture.name, renderingLayersTexture.nameID);
                 RenderingLayerUtils.SetupProperties(cmd, renderingLayerMaskSize);
                 if (this.renderingModeActual == RenderingMode.Deferred) // As this is requested by render pass we still want to set it
-                    cmd.SetGlobalTexture("_CameraRenderingLayersTexture", renderingLayersTexture.nameID);
+                    cmd.SetGlobalTexture(k_CameraRenderingLayersTexture, renderingLayersTexture.nameID);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
@@ -968,7 +973,7 @@ namespace UnityEngine.Rendering.Universal
 
                 cmd.SetGlobalTexture(normalsTexture.name, normalsTexture.nameID);
                 if (this.renderingModeActual == RenderingMode.Deferred) // As this is requested by render pass we still want to set it
-                    cmd.SetGlobalTexture("_CameraNormalsTexture", normalsTexture.nameID);
+                    cmd.SetGlobalTexture(k_CameraNormalsTexture, normalsTexture.nameID);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
             }
@@ -1128,7 +1133,7 @@ namespace UnityEngine.Rendering.Universal
             // Set the depth texture to the far Z if we do not have a depth prepass or copy depth
             // Don't do this for Overlay cameras to not lose depth data in between cameras (as Base is guaranteed to be first)
             if (cameraData.renderType == CameraRenderType.Base && !requiresDepthPrepass && !requiresDepthCopyPass)
-                Shader.SetGlobalTexture("_CameraDepthTexture", SystemInfo.usesReversedZBuffer ? Texture2D.blackTexture : Texture2D.whiteTexture);
+                Shader.SetGlobalTexture(k_CameraDepthTexture, SystemInfo.usesReversedZBuffer ? Texture2D.blackTexture : Texture2D.whiteTexture);
 
             if (copyColorPass)
             {
@@ -1303,7 +1308,7 @@ namespace UnityEngine.Rendering.Universal
                 // Turning off unnecessary NRP in Editor because of MSAA mistmatch between CameraTargetDescriptor vs camera backbuffer
                 // NRP layer considers this being a pass with MSAA samples by checking CameraTargetDescriptor taken from RP asset
                 // while the camera backbuffer has a single sample
-                m_FinalDepthCopyPass.useNativeRenderPass = false; 
+                m_FinalDepthCopyPass.useNativeRenderPass = false;
                 EnqueuePass(m_FinalDepthCopyPass);
             }
 #endif
@@ -1474,9 +1479,9 @@ namespace UnityEngine.Rendering.Universal
                 {
                     m_ActiveCameraColorAttachment = m_ColorBufferSystem.GetBackBuffer(cmd);
                     ConfigureCameraColorTarget(m_ActiveCameraColorAttachment);
-                    cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
+                    cmd.SetGlobalTexture(k_CameraColorTexture, m_ActiveCameraColorAttachment.nameID);
                     //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
-                    cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ActiveCameraColorAttachment.nameID);
+                    cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ActiveCameraColorAttachment.nameID);
                 }
 
                 if (m_CameraDepthAttachment == null || m_CameraDepthAttachment.nameID != BuiltinRenderTextureType.CameraTarget)
@@ -1610,9 +1615,9 @@ namespace UnityEngine.Rendering.Universal
                 ConfigureCameraColorTarget(m_ColorBufferSystem.GetBackBuffer(cmd));
 
             m_ActiveCameraColorAttachment = m_ColorBufferSystem.GetBackBuffer(cmd);
-            cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
+            cmd.SetGlobalTexture(k_CameraColorTexture, m_ActiveCameraColorAttachment.nameID);
             //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
-            cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ActiveCameraColorAttachment.nameID);
+            cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ActiveCameraColorAttachment.nameID);
         }
 
         internal override RTHandle GetCameraColorFrontBuffer(CommandBuffer cmd)

@@ -964,6 +964,8 @@ namespace UnityEngine.Rendering.Universal
         internal static readonly int k_ShaderPropertyId_PrevViewProjM = Shader.PropertyToID("_PrevViewProjM");
         internal static readonly int k_ShaderPropertyId_ViewProjMStereo = Shader.PropertyToID("_ViewProjMStereo");
         internal static readonly int k_ShaderPropertyId_PrevViewProjMStereo = Shader.PropertyToID("_PrevViewProjMStereo");
+        internal static readonly int k_ShaderPropertyId_Intensity = Shader.PropertyToID("_Intensity");
+        internal static readonly int k_ShaderPropertyId_Clamp = Shader.PropertyToID("_Clamp");
 
         internal static void UpdateMotionBlurMatrices(ref Material material, Camera camera, XRPass xr)
         {
@@ -1003,8 +1005,8 @@ namespace UnityEngine.Rendering.Universal
 
             UpdateMotionBlurMatrices(ref material, cameraData.camera, cameraData.xr);
 
-            material.SetFloat("_Intensity", m_MotionBlur.intensity.value);
-            material.SetFloat("_Clamp", m_MotionBlur.clamp.value);
+            material.SetFloat(k_ShaderPropertyId_Intensity, m_MotionBlur.intensity.value);
+            material.SetFloat(k_ShaderPropertyId_Clamp, m_MotionBlur.clamp.value);
 
             PostProcessUtils.SetSourceSize(cmd, m_Descriptor);
 
@@ -1529,11 +1531,11 @@ namespace UnityEngine.Rendering.Universal
 
                                 break;
                             }
-                            
+
                             case ImageUpscalingFilter.SGSR:
                             {
                                 material.EnableKeyword(ShaderKeywordStrings.Sgsr);
-                                
+
                                 break;
                             }
                         }

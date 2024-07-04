@@ -204,7 +204,7 @@ namespace UnityEngine.Rendering.Universal
     //    val3.ToString => "85070591730234615847396907784232501249" (8.5e+37)
     //------------------------------------------------------------------------------
 
-    internal struct Int128
+    internal struct Int128 : IEquatable<Int128>
     {
         private Int64 hi;
         private UInt64 lo;
@@ -235,9 +235,7 @@ namespace UnityEngine.Rendering.Universal
 
         public static bool operator ==(Int128 val1, Int128 val2)
         {
-            if ((object)val1 == (object)val2) return true;
-            else if ((object)val1 == null || (object)val2 == null) return false;
-            return (val1.hi == val2.hi && val1.lo == val2.lo);
+            return val1.hi == val2.hi && val1.lo == val2.lo;
         }
 
         public static bool operator !=(Int128 val1, Int128 val2)
@@ -245,17 +243,21 @@ namespace UnityEngine.Rendering.Universal
             return !(val1 == val2);
         }
 
+        public bool Equals(Int128 other)
+        {
+            return this == other;
+        }
+
         public override bool Equals(System.Object obj)
         {
-            if (obj == null || !(obj is Int128))
-                return false;
-            Int128 i128 = (Int128)obj;
-            return (i128.hi == hi && i128.lo == lo);
+            if (obj is Int128 other)
+                return this == other;
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return hi.GetHashCode() ^ lo.GetHashCode();
+            return System.HashCode.Combine(hi, lo);
         }
 
         public static bool operator >(Int128 val1, Int128 val2)
@@ -342,7 +344,7 @@ namespace UnityEngine.Rendering.Universal
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
 
-    internal struct IntPoint
+    internal struct IntPoint : IEquatable<IntPoint>
     {
         public ClipInt N;
         public ClipInt X;
@@ -382,15 +384,16 @@ namespace UnityEngine.Rendering.Universal
             return a.X != b.X || a.Y != b.Y;
         }
 
+        public bool Equals(IntPoint other)
+        {
+            return this == other;
+        }
+
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            if (obj is IntPoint)
-            {
-                IntPoint a = (IntPoint)obj;
-                return (X == a.X) && (Y == a.Y);
-            }
-            else return false;
+            if (obj is IntPoint other)
+                return this == other;
+            return false;
         }
 
         public override int GetHashCode()

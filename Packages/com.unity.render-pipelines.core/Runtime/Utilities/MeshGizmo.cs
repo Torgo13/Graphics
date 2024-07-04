@@ -11,6 +11,7 @@ namespace UnityEngine.Rendering
     class MeshGizmo : IDisposable
     {
         public static readonly int vertexCountPerCube = 24;
+        static readonly int HandleZTest = Shader.PropertyToID("_HandleZTest");
 
         public Mesh mesh;
 
@@ -87,7 +88,7 @@ namespace UnityEngine.Rendering
             mesh.SetColors(colors);
             mesh.SetIndices(indices, topology, 0);
 
-            mat.SetFloat("_HandleZTest", (int)depthTest);
+            mat.SetFloat(HandleZTest, (int)depthTest);
 
             var cmd = CommandBufferPool.Get(gizmoName ?? "Mesh Gizmo Rendering");
             cmd.DrawMesh(mesh, trs, mat, 0, 0);

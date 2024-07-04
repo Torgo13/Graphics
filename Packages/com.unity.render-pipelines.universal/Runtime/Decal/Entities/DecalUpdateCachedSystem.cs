@@ -113,6 +113,7 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     internal class DecalUpdateCachedSystem
     {
+        private static readonly int m_DrawOrder = Shader.PropertyToID("_DrawOrder");
         private DecalEntityManager m_EntityManager;
         private ProfilingSampler m_Sampler;
         private ProfilingSampler m_SamplerJob;
@@ -142,8 +143,8 @@ namespace UnityEngine.Rendering.Universal
 
             // Make sure draw order is up to date
             var material = entityChunk.material;
-            if (material.HasProperty("_DrawOrder"))
-                cachedChunk.drawOrder = material.GetInt("_DrawOrder");
+            if (material.HasProperty(m_DrawOrder))
+                cachedChunk.drawOrder = material.GetInt(m_DrawOrder);
 
             // Shader can change any time in editor, so we have to update passes each time
 #if !UNITY_EDITOR
