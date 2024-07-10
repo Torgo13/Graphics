@@ -104,6 +104,12 @@ namespace UnityEngine.Rendering
 
             public void Dispose()
             {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
                 RenderTexture.ReleaseTemporary(sceneSDF);
                 RenderTexture.ReleaseTemporary(sceneSDF2);
                 RenderTexture.ReleaseTemporary(dummyRenderTarget);
@@ -327,7 +333,7 @@ namespace UnityEngine.Rendering
 
                 return;
             }
-            
+
             float minBrickSize = subdivisionCtx.profile.minBrickSize;
 
             var cmd = CommandBufferPool.Get($"Subdivide (Sub)Cell {cellAABB.center}");

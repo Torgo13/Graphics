@@ -245,8 +245,14 @@ namespace UnityEditor.Rendering.LookDev
 
 
         private bool disposedValue = false; // To detect redundant calls
-        /// <summary>Disposable behaviour</summary>
-        void IDisposable.Dispose()
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -388,7 +394,7 @@ namespace UnityEditor.Rendering.LookDev
             environment = null;
 
             GUID storedGUID;
-            string[] GUIDAndLocalIDInFile = m_EnvironmentGUID.Split(new[] { ',' });
+            string[] GUIDAndLocalIDInFile = m_EnvironmentGUID.Split(',');
             GUID.TryParse(GUIDAndLocalIDInFile[0], out storedGUID);
             if (storedGUID.Empty())
                 return;
@@ -402,9 +408,8 @@ namespace UnityEditor.Rendering.LookDev
                 object[] loaded = AssetDatabase.LoadAllAssetsAtPath(path);
                 for (int i = 0; i < loaded.Length; ++i)
                 {
-                    string garbage;
                     long testedLocalIndex;
-                    if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier((UnityEngine.Object)loaded[i], out garbage, out testedLocalIndex)
+                    if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier((UnityEngine.Object)loaded[i], out _, out testedLocalIndex)
                         && testedLocalIndex == localIDInFile)
                     {
                         environment = loaded[i] as Environment;

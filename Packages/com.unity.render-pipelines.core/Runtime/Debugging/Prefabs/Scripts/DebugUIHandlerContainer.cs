@@ -44,7 +44,7 @@ namespace UnityEngine.Rendering.UI
                 return false;
 
             return GetActiveChildren()
-                .Count(x => x == widget) > 0;
+                .Any(x => x == widget);
         }
 
         List<DebugUIHandlerWidget> GetActiveChildren()

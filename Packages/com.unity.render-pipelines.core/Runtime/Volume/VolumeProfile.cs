@@ -40,7 +40,7 @@ namespace UnityEngine.Rendering
         {
             if (components == null)
                return;
-               
+
             for (int i = 0; i < components.Count; i++)
             {
                 if (components[i] != null)
@@ -310,7 +310,7 @@ namespace UnityEngine.Rendering
             {
                 int hash = 17;
 
-                for (int i = 0; i < components.Count; i++)
+                for (int i = 0, componentsCount = components.Count; i < componentsCount; i++)
                     hash = hash * 23 + components[i].GetHashCode();
 
                 return hash;

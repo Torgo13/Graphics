@@ -68,7 +68,7 @@ namespace UnityEngine.Rendering
         /// </summary>
         /// <param name="index">The index of the item to get.</param>
         /// <returns>A reference to the item.</returns>
-        public unsafe ref T GetUnchecked(in int index) => ref m_BufferPtr[index];
+        public ref T GetUnchecked(in int index) => ref m_BufferPtr[index];
 
         /// <summary>
         /// Try to add a value in the list.
@@ -97,7 +97,7 @@ namespace UnityEngine.Rendering
         /// <param name="dstBuffer">The destination buffer of the copy operation.</param>
         /// <param name="startDstIndex">The index of the first element that will be copied in the destination buffer.</param>
         /// <param name="copyCount">The number of item to copy.</param>
-        public unsafe void CopyTo(T* dstBuffer, int startDstIndex, int copyCount)
+        public void CopyTo(T* dstBuffer, int startDstIndex, int copyCount)
         {
             UnsafeUtility.MemCpy(dstBuffer + startDstIndex, m_BufferPtr,
                 UnsafeUtility.SizeOf<T>() * copyCount);

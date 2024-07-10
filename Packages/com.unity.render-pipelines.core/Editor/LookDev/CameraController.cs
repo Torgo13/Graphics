@@ -181,7 +181,7 @@ namespace UnityEditor.Rendering.LookDev
             flySpeedNormalized -= scrollWheelDelta * .01f;
             string cameraSpeedDisplayValue = flySpeed.ToString(flySpeed < 0.1f ? "F2" : flySpeed < 10f ? "F1" : "F0");
             if (flySpeed < 0.1f)
-                cameraSpeedDisplayValue = cameraSpeedDisplayValue.TrimStart(new Char[] { '0' });
+                cameraSpeedDisplayValue = cameraSpeedDisplayValue.TrimStart('0');
             GUIContent cameraSpeedContent = EditorGUIUtility.TrTempContent(
                 $"{cameraSpeedDisplayValue}x");
             m_Window.ShowNotification(cameraSpeedContent, .5f);
@@ -325,7 +325,7 @@ namespace UnityEditor.Rendering.LookDev
 
         bool GetKeyCombinationByID(string ID, out KeyCombination combination)
         {
-            var sequence = ShortcutManager.instance.GetShortcutBinding(ID).keyCombinationSequence.GetEnumerator();
+            using var sequence = ShortcutManager.instance.GetShortcutBinding(ID).keyCombinationSequence.GetEnumerator();
             if (sequence.MoveNext()) //have a first entry
             {
                 combination = new KeyCombination(sequence.Current);
@@ -493,9 +493,7 @@ namespace UnityEditor.Rendering.LookDev
                     throw new ArgumentException("Unknown ViewIndex");
             }
 
-            if (stateToSwitch != m_CameraState)
-                m_CameraState = stateToSwitch;
-
+            m_CameraState = stateToSwitch;
             m_CurrentViewIndex = index;
         }
 

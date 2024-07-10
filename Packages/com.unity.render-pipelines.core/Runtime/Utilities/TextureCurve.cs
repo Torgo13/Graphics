@@ -84,21 +84,35 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Finalizer.
         /// </summary>
-        ~TextureCurve() { }
+        ~TextureCurve()
+        {
+            Dispose(false);
+        }
 
         /// <summary>
         /// Cleans up the internal texture resource.
         /// </summary>
-        [Obsolete("Please use Release() instead.")]
-        public void Dispose() { }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            Release();
+        }
 
         /// <summary>
         /// Releases the internal texture resource.
         /// </summary>
         public void Release()
         {
-            CoreUtils.Destroy(m_Texture);
-            m_Texture = null;
+            if (m_Texture != null)
+            {
+                CoreUtils.Destroy(m_Texture);
+                m_Texture = null;
+            }
         }
 
         /// <summary>

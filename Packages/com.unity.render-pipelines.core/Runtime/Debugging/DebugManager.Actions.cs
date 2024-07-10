@@ -299,7 +299,7 @@ namespace UnityEngine.Rendering
                 foreach (var touch in touches)
                 {
                     // Gesture: 3-finger double-tap
-                    if ((!expectedTouchPhase.HasValue || touch.phase == expectedTouchPhase.Value) && touch.tapCount == 2)
+                    if (touch.phase == expectedTouchPhase.Value && touch.tapCount == 2)
                         return true;
                 }
             }

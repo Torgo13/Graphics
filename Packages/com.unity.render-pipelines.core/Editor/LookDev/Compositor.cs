@@ -99,6 +99,12 @@ namespace UnityEditor.Rendering.LookDev
         bool m_Disposed = false;
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             if (m_Disposed)
                 return;
             m_Disposed = true;
@@ -184,14 +190,19 @@ namespace UnityEditor.Rendering.LookDev
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             if (m_Disposed)
                 return;
             m_Disposed = true;
             CleanUp();
-            GC.SuppressFinalize(this);
         }
 
-        ~Compositer() => CleanUp();
+        ~Compositer() => Dispose(false);
 
         public void Render()
         {

@@ -100,7 +100,16 @@ namespace UnityEngine.Rendering
 
         public void Dispose()
         {
-            CoreUtils.Destroy(mesh);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (mesh != null)
+            {
+                CoreUtils.Destroy(mesh);
+            }
         }
     }
 }

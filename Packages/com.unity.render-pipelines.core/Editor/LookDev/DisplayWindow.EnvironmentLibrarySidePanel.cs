@@ -93,8 +93,9 @@ namespace UnityEditor.Rendering.LookDev
             };
 #if UNITY_2022_2_OR_NEWER
           m_EnvironmentList.selectionChanged += objects =>
-            {
-                bool empty = !objects.GetEnumerator().MoveNext();
+          {
+                using var temp = objects.GetEnumerator();
+                bool empty = !temp.MoveNext();
                 if (empty || (LookDev.currentContext.environmentLibrary?.Count ?? 0) == 0)
 #elif UNITY_2020_1_OR_NEWER
             m_EnvironmentList.onSelectionChange += objects =>
@@ -369,6 +370,12 @@ namespace UnityEditor.Rendering.LookDev
             }
 
             public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
             {
                 if (windowContent.Contains(cursorFollower))
                     windowContent.Remove(cursorFollower);

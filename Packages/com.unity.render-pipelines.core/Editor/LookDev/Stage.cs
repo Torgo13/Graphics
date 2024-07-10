@@ -274,13 +274,18 @@ namespace UnityEditor.Rendering.LookDev
             }
         }
 
-        ~Stage() => CleanUp();
+        ~Stage() => Dispose(false);
 
         /// <summary>Clear and close the stage's scene.</summary>
         public void Dispose()
         {
-            CleanUp();
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            CleanUp();
         }
     }
 
@@ -373,12 +378,17 @@ namespace UnityEditor.Rendering.LookDev
             }
         }
 
-        ~StageCache() => CleanUp();
+        ~StageCache() => Dispose(false);
 
         public void Dispose()
         {
-            CleanUp();
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            CleanUp();
         }
     }
 }

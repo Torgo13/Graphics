@@ -300,9 +300,6 @@ namespace UnityEngine.Rendering
                             if (ShouldCullCell(cellInfo.cell.position, ProbeReferenceVolume.instance.GetTransform().posWS))
                                 continue;
 
-                            if (cellInfo.cell.bricks == null)
-                                continue;
-
                             foreach (var brick in cellInfo.cell.bricks)
                                 yield return brick;
                         }

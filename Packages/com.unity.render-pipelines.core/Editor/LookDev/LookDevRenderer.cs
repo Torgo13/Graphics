@@ -26,14 +26,23 @@ namespace UnityEditor.Rendering.LookDev
         /// <summary>Dispose pattern</summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             if (disposed)
                 return;
             disposed = true;
 
             stage = null;
             updater = null;
-            output?.Release();
-            output = null;
+            if (output != null)
+            {
+                output.Release();
+                output = null;
+            }
         }
     }
 
@@ -69,7 +78,7 @@ namespace UnityEditor.Rendering.LookDev
         {
             if (data.viewPort.IsNullOrInverted()
                 || data.viewPort.width != data.output.width
-                || data.viewPort.height != data.viewPort.height)
+                || data.viewPort.height != data.output.height)
             {
                 data.output = null;
                 data.sizeMissmatched = true;

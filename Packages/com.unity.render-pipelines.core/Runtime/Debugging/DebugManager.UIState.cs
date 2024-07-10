@@ -19,7 +19,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// The modes of the UI of the Rendering Debugger
         /// </summary>
-        public enum UIMode : int
+        public enum UIMode
         {
             /// <summary>
             /// Editor Window

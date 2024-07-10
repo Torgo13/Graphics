@@ -194,7 +194,7 @@ namespace UnityEngine.Rendering
             }
         }
 
-        void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (!m_DisposedValue)
             {
@@ -215,6 +215,7 @@ namespace UnityEngine.Rendering
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
