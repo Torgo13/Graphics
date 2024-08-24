@@ -171,6 +171,7 @@ namespace UnityEngine.Rendering.Universal
                 i = upperLayerInBatch + 1;
             }
 
+#if COMPATIBILITY
             // Account for Sprite Mask and normal map usage as there might be masks on a different layer that need to mask out the normals
             for (var i = 0; i < batchCount; ++i)
             {
@@ -178,6 +179,7 @@ namespace UnityEngine.Rendering.Universal
                 var hasSpriteMask = SpriteMaskUtility.HasSpriteMaskInLayerRange(layerBatch.layerRange);
                 layerBatch.useNormals = layerBatch.lightStats.useNormalMap || (anyNormals && hasSpriteMask);
             }
+#endif
 
             return s_LayerBatches;
         }

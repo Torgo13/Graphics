@@ -111,12 +111,14 @@ void InitializeData(inout SpeedTreeVertexInput input, float lodValue)
         leafTwo = true;
     }
 
+#if COMPATIBILITY
     // leaf facing
     if (geometryType == GEOM_TYPE_FACINGLEAF)
     {
         float3 anchor = float3(input.texcoord1.zw, input.texcoord2.w);
         input.vertex.xyz = DoLeafFacing(input.vertex.xyz, anchor);
     }
+#endif
 #endif
 
     // wind
