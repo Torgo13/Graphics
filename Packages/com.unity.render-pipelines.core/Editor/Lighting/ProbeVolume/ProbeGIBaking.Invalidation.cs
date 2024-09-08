@@ -56,8 +56,11 @@ namespace UnityEngine.Rendering
         // TODO: This whole process will need optimization.
         static bool NeighbourhoodIsEmptySpace(Vector3 pos, float searchDistance, Bounds boundsToCheckAgainst)
         {
-
+#if OPTIMISATION
             Vector3 halfExtents = 0.5f * searchDistance * Vector3.one;
+#else
+            Vector3 halfExtents = Vector3.one * searchDistance * 0.5f;
+#endif // OPTIMISATION
             Vector3 brickCenter = pos + halfExtents;
 
             Collider[] colliders = Physics.OverlapBox(brickCenter, halfExtents);

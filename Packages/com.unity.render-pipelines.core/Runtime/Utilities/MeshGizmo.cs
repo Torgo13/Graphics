@@ -11,7 +11,9 @@ namespace UnityEngine.Rendering
     class MeshGizmo : IDisposable
     {
         public static readonly int vertexCountPerCube = 24;
+#if OPTIMISATION
         static readonly int HandleZTest = Shader.PropertyToID("_HandleZTest");
+#endif // OPTIMISATION
 
         public Mesh mesh;
 
@@ -88,7 +90,11 @@ namespace UnityEngine.Rendering
             mesh.SetColors(colors);
             mesh.SetIndices(indices, topology, 0);
 
+#if OPTIMISATION
             mat.SetFloat(HandleZTest, (int)depthTest);
+#else
+            mat.SetFloat("_HandleZTest", (int)depthTest);
+#endif // OPTIMISATION
 
             var cmd = CommandBufferPool.Get(gizmoName ?? "Mesh Gizmo Rendering");
             cmd.DrawMesh(mesh, trs, mat, 0, 0);
@@ -98,6 +104,7 @@ namespace UnityEngine.Rendering
         public void RenderWireframe(Matrix4x4 trs, CompareFunction depthTest = CompareFunction.LessEqual, string gizmoName = null)
             => DrawMesh(trs, wireMaterial, MeshTopology.Lines, depthTest, gizmoName);
 
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -111,5 +118,11 @@ namespace UnityEngine.Rendering
                 CoreUtils.Destroy(mesh);
             }
         }
+#else
+        public void Dispose()
+        {
+            CoreUtils.Destroy(mesh);
+        }
+#endif // OPTIMISATION_IDISPOSABLE
     }
 }

@@ -44,7 +44,11 @@ namespace UnityEngine.Rendering.UI
                 return false;
 
             return GetActiveChildren()
+#if OPTIMISATION
                 .Any(x => x == widget);
+#else
+                .Count(x => x == widget) > 0;
+#endif // OPTIMISATION
         }
 
         List<DebugUIHandlerWidget> GetActiveChildren()
@@ -56,7 +60,12 @@ namespace UnityEngine.Rendering.UI
                 if (!t.gameObject.activeInHierarchy)
                     continue;
 
+#if OPTIMISATION_TRYGET
                 if (t.TryGetComponent<DebugUIHandlerWidget>(out var c))
+#else
+                var c = t.GetComponent<DebugUIHandlerWidget>();
+                if (c != null)
+#endif // OPTIMISATION_TRYGET
                     list.Add(c);
             }
 

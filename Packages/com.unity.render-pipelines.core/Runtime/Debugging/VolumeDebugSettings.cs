@@ -209,7 +209,11 @@ namespace UnityEngine.Rendering
 
                 for (int j = 0; j < fields.Length; j++)
                 {
+#if BUGFIX
                     var param = GetParameter(component, fields[j]);
+#else
+                    var param = GetParameter(component, fields[j]); ;
+#endif // BUGFIX
                     states[i, j] = param.overrideState ? param : null;
                 }
             }

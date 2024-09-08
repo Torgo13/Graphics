@@ -1,3 +1,5 @@
+#define OPTIMISATION
+
 using System;
 using Unity.Collections;
 using System.Collections.Generic;
@@ -280,7 +282,11 @@ namespace UnityEngine.Rendering.Universal
                 if (c.TryGetComponent<UniversalAdditionalCameraData>(out var acd))
                 {
                     acd.taaPersistentData?.DeallocateTargets();
+#if BUGFIX
                 }
+#else
+                };
+#endif // BUGFIX
             }
         }
 
@@ -473,13 +479,20 @@ namespace UnityEngine.Rendering.Universal
 
                 camera.targetTexture = temporaryRT ? temporaryRT : destination;
 
-
+#if OPTIMISATION_LISTPOOL
                 using (UnityEngine.Pool.ListPool<Camera>.Get(out var tmp))
+#else
+                using (ListPool<Camera>.Get(out var tmp))
+#endif // OPTIMISATION_LISTPOOL
                 {
                     tmp.Add(camera);
                     if (standardRequest != null)
                     {
+#if OPTIMISATION
                         Render(context, tmp);
+#else
+                        Render(context, tmp.ToArray());
+#endif // OPTIMISATION
                     }
                     else
                     {
@@ -493,7 +506,11 @@ namespace UnityEngine.Rendering.Universal
                             BeginCameraRendering(context, camera);
                         }
 
+#if OPTIMISATION
                         var additionalCameraData = camera.gameObject.GetComponent<UniversalAdditionalCameraData>();
+#else
+                        camera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
+#endif // OPTIMISATION
                         RenderSingleCameraInternal(context, camera, ref additionalCameraData);
 
                         using (new ProfilingScope(null, Profiling.Pipeline.endCameraRendering))
@@ -1793,12 +1810,14 @@ namespace UnityEngine.Rendering.Universal
                     break;
                 }
 
+#if CUSTOM_URP
                 case UpscalingFilterSelection.SGSR:
                 {
                     filter = ImageUpscalingFilter.SGSR;
 
                     break;
                 }
+#endif // CUSTOM_URP
             }
 
             return filter;

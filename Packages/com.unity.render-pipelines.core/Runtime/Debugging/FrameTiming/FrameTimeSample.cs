@@ -89,7 +89,11 @@ namespace UnityEngine.Rendering
                 aggregate.MainThreadCPUPresentWaitTime = func(aggregate.MainThreadCPUPresentWaitTime, sample.MainThreadCPUPresentWaitTime);
                 aggregate.RenderThreadCPUFrameTime = func(aggregate.RenderThreadCPUFrameTime, sample.RenderThreadCPUFrameTime);
                 aggregate.GPUFrameTime = func(aggregate.GPUFrameTime, sample.GPUFrameTime);
+#if BUGFIX
             }
+#else
+            };
+#endif // BUGFIX
 
             FrameTimeSample average = new();
             FrameTimeSample min = new(float.MaxValue);

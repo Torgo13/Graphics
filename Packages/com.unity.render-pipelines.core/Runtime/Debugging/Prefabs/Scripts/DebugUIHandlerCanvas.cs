@@ -110,7 +110,11 @@ namespace UnityEngine.Rendering.UI
             DebugUIHandlerWidget selectedWidget = null;
             foreach (var panel in panels)
             {
+#if OPTIMISATION
                 if (panel.isEditorOnly || !panel.children.Any(x => !x.isEditorOnly && !x.isHidden))
+#else
+                if (panel.isEditorOnly || panel.children.Count(x => !x.isEditorOnly && !x.isHidden) == 0)
+#endif // OPTIMISATION
                     continue;
 
                 var go = Instantiate(panelPrefab, transform, false).gameObject;
@@ -236,7 +240,7 @@ namespace UnityEngine.Rendering.UI
             }
             else
             {
-                if (m_SelectedWidget.GetWidget() == null)
+                if (m_SelectedWidget == null || m_SelectedWidget.GetWidget() == null)
                     m_CurrentQueryPath = string.Empty;
                 else
                     m_CurrentQueryPath = m_SelectedWidget.GetWidget().queryPath;

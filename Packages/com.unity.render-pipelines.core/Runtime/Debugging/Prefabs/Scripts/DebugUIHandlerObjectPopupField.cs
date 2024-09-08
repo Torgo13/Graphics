@@ -29,7 +29,11 @@ namespace UnityEngine.Rendering.UI
                 return;
 
             var elementsArray = elements.ToArray();
+#if OPTIMISATION
             var count = elementsArray.Length;
+#else
+            var count = elementsArray.Count();
+#endif // OPTIMISATION
 
             if (m_Index >= count)
             {

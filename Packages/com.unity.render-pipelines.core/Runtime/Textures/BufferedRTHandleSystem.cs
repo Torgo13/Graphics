@@ -194,7 +194,11 @@ namespace UnityEngine.Rendering
             }
         }
 
+#if OPTIMISATION_IDISPOSABLE
         protected virtual void Dispose(bool disposing)
+#else
+        void Dispose(bool disposing)
+#endif // OPTIMISATION_IDISPOSABLE
         {
             if (!m_DisposedValue)
             {
@@ -215,7 +219,9 @@ namespace UnityEngine.Rendering
         public void Dispose()
         {
             Dispose(true);
+#if OPTIMISATION_IDISPOSABLE
             GC.SuppressFinalize(this);
+#endif // OPTIMISATION_IDISPOSABLE
         }
 
         /// <summary>

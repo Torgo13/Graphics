@@ -94,8 +94,12 @@ namespace UnityEditor.Rendering.LookDev
 #if UNITY_2022_2_OR_NEWER
           m_EnvironmentList.selectionChanged += objects =>
           {
+#if OPTIMISATION
                 using var temp = objects.GetEnumerator();
                 bool empty = !temp.MoveNext();
+#else
+                bool empty = !objects.GetEnumerator().MoveNext();
+#endif // OPTIMISATION
                 if (empty || (LookDev.currentContext.environmentLibrary?.Count ?? 0) == 0)
 #elif UNITY_2020_1_OR_NEWER
             m_EnvironmentList.onSelectionChange += objects =>
@@ -369,6 +373,7 @@ namespace UnityEditor.Rendering.LookDev
                 cursorFollower.style.top = windowLocalPosition.y - cursorOffset.y;
             }
 
+#if OPTIMISATION_IDISPOSABLE
             public void Dispose()
             {
                 Dispose(true);
@@ -380,6 +385,13 @@ namespace UnityEditor.Rendering.LookDev
                 if (windowContent.Contains(cursorFollower))
                     windowContent.Remove(cursorFollower);
             }
+#else
+            public void Dispose()
+            {
+                if (windowContent.Contains(cursorFollower))
+                    windowContent.Remove(cursorFollower);
+            }
+#endif // OPTIMISATION_IDISPOSABLE
         }
 
         class EnvironmentPreviewDragger : Manipulator

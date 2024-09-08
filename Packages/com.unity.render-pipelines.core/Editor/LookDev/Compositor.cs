@@ -97,6 +97,8 @@ namespace UnityEditor.Rendering.LookDev
             => UpdateSize(computeIndex(index), rect, pixelPerfect, renderingCamera, $"LookDevRT-Final-{index}");
 
         bool m_Disposed = false;
+
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -118,6 +120,23 @@ namespace UnityEditor.Rendering.LookDev
                 m_RTs[index] = null;
             }
         }
+#else
+        public void Dispose()
+        {
+            if (m_Disposed)
+                return;
+            m_Disposed = true;
+
+            for (int index = 0; index < k_TextureCacheSize; ++index)
+            {
+                if (m_RTs[index] == null || m_RTs[index].Equals(null))
+                    continue;
+
+                UnityEngine.Object.DestroyImmediate(m_RTs[index]);
+                m_RTs[index] = null;
+            }
+        }
+#endif // OPTIMISATION_IDISPOSABLE
     }
 
     class Compositer : IDisposable
@@ -188,6 +207,7 @@ namespace UnityEditor.Rendering.LookDev
             m_Displayer.OnUpdateRequested -= Render;
         }
 
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -203,6 +223,18 @@ namespace UnityEditor.Rendering.LookDev
         }
 
         ~Compositer() => Dispose(false);
+#else
+        public void Dispose()
+        {
+            if (m_Disposed)
+                return;
+            m_Disposed = true;
+            CleanUp();
+            GC.SuppressFinalize(this);
+        }
+
+        ~Compositer() => CleanUp();
+#endif // OPTIMISATION_IDISPOSABLE
 
         public void Render()
         {

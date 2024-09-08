@@ -356,7 +356,7 @@ namespace UnityEngine.Rendering
         /// <param name="colorBuffers">RenderTargetIdentifier array of the color render textures.</param>
         /// <param name="depthBuffer">RenderTargetIdentifier of the depth render texture.</param>
         /// <param name="clearFlag">If not set to ClearFlag.None, specifies how to clear the render target after setup.</param>
-        public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier[] colorBuffers, RenderTargetIdentifier depthBuffer, ClearFlag clearFlag)
+        public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier[] colorBuffers, RenderTargetIdentifier depthBuffer, ClearFlag clearFlag = ClearFlag.None)
         {
             SetRenderTarget(cmd, colorBuffers, depthBuffer, clearFlag, Color.clear);
         }
@@ -424,7 +424,7 @@ namespace UnityEngine.Rendering
         /// <param name="cubemapFace">Cubemap face that should be bound as a render texture if applicable.</param>
         /// <param name="depthSlice">Depth slice that should be bound as a render texture if applicable.</param>
         public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier buffer, RenderBufferLoadAction loadAction, RenderBufferStoreAction storeAction,
-            ClearFlag clearFlag, Color clearColor, int miplevel, CubemapFace cubemapFace = CubemapFace.Unknown, int depthSlice = -1)
+            ClearFlag clearFlag, Color clearColor, int miplevel = 0, CubemapFace cubemapFace = CubemapFace.Unknown, int depthSlice = -1)
         {
             depthSlice = FixupDepthSlice(depthSlice, cubemapFace);
             buffer = new RenderTargetIdentifier(buffer, miplevel, cubemapFace, depthSlice);
@@ -504,7 +504,7 @@ namespace UnityEngine.Rendering
         /// <param name="depthSlice">Depth slice that should be bound as a render texture if applicable.</param>
         public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier colorBuffer, RenderBufferLoadAction colorLoadAction, RenderBufferStoreAction colorStoreAction,
             RenderTargetIdentifier depthBuffer, RenderBufferLoadAction depthLoadAction, RenderBufferStoreAction depthStoreAction,
-            ClearFlag clearFlag, Color clearColor, int miplevel, CubemapFace cubemapFace = CubemapFace.Unknown, int depthSlice = -1)
+            ClearFlag clearFlag, Color clearColor, int miplevel = 0, CubemapFace cubemapFace = CubemapFace.Unknown, int depthSlice = -1)
         {
             depthSlice = FixupDepthSlice(depthSlice, cubemapFace);
             colorBuffer = new RenderTargetIdentifier(colorBuffer, miplevel, cubemapFace, depthSlice);
@@ -744,7 +744,7 @@ namespace UnityEngine.Rendering
         /// <param name="colorBuffers">RenderTargetIdentifier array of the color render textures.</param>
         /// <param name="depthBuffer">Depth Buffer RTHandle.</param>
         /// <param name="clearFlag">If not set to ClearFlag.None, specifies how to clear the render target after setup.</param>
-        public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier[] colorBuffers, RTHandle depthBuffer, ClearFlag clearFlag)
+        public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier[] colorBuffers, RTHandle depthBuffer, ClearFlag clearFlag = ClearFlag.None)
         {
             SetRenderTarget(cmd, colorBuffers, depthBuffer.nameID); // Don't clear here, viewport needs to be set before we do.
             SetViewportAndClear(cmd, depthBuffer, clearFlag, Color.clear);
@@ -890,7 +890,11 @@ namespace UnityEngine.Rendering
                 temp = string.Format("{0}x{1}{2}_{3}", width, height, mips ? "_Mips" : "", format);
             else
                 temp = string.Format("{0}x{1}x{2}{3}_{4}", width, height, depth, mips ? "_Mips" : "", format);
+#if OPTIMISATION
             temp = String.Format("{0}_{1}_{2}", name.Length == 0 ? "Texture" : name, (dim == TextureDimension.None) ? "" : dim.ToString(), temp);
+#else
+            temp = String.Format("{0}_{1}_{2}", name == "" ? "Texture" : name, (dim == TextureDimension.None) ? "" : dim.ToString(), temp);
+#endif // OPTIMISATION
 
             return temp;
         }

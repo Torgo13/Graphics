@@ -194,10 +194,13 @@ namespace UnityEngine.Rendering
                 float moveSpeed = Time.deltaTime * m_MoveSpeed;
                 if (fire1 || leftShiftBoost && leftShift)
                     moveSpeed *= m_Turbo;
-                /*transform.position += inputVertical * moveSpeed * transform.forward;
-                transform.position += inputHorizontal * moveSpeed * transform.right;
-                transform.position += inputYAxis * moveSpeed * Vector3.up;*/
+#if OPTIMISATION
                 transform.position += moveSpeed * (inputVertical * transform.forward + inputHorizontal * transform.right + inputYAxis * Vector3.up);
+#else
+                transform.position += transform.forward * moveSpeed * inputVertical;
+                transform.position += transform.right * moveSpeed * inputHorizontal;
+                transform.position += Vector3.up * moveSpeed * inputYAxis;
+#endif // OPTIMISATION
             }
         }
     }

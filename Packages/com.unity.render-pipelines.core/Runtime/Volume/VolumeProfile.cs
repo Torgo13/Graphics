@@ -310,7 +310,11 @@ namespace UnityEngine.Rendering
             {
                 int hash = 17;
 
+#if OPTIMISATION
                 for (int i = 0, componentsCount = components.Count; i < componentsCount; i++)
+#else
+                for (int i = 0; i < components.Count; i++)
+#endif // OPTIMISATION
                     hash = hash * 23 + components[i].GetHashCode();
 
                 return hash;

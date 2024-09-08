@@ -24,6 +24,7 @@ namespace UnityEditor.Rendering.LookDev
         private bool disposed = false;
 
         /// <summary>Dispose pattern</summary>
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -44,6 +45,19 @@ namespace UnityEditor.Rendering.LookDev
                 output = null;
             }
         }
+#else
+        public void Dispose()
+        {
+            if (disposed)
+                return;
+            disposed = true;
+
+            stage = null;
+            updater = null;
+            output?.Release();
+            output = null;
+        }
+#endif // OPTIMISATION_IDISPOSABLE
     }
 
     /// <summary>Basic renderer to draw scene in texture</summary>
@@ -78,7 +92,11 @@ namespace UnityEditor.Rendering.LookDev
         {
             if (data.viewPort.IsNullOrInverted()
                 || data.viewPort.width != data.output.width
+#if BUGFIX
                 || data.viewPort.height != data.output.height)
+#else
+                || data.viewPort.height != data.viewPort.height)
+#endif // BUGFIX
             {
                 data.output = null;
                 data.sizeMissmatched = true;

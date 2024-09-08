@@ -102,6 +102,7 @@ namespace UnityEngine.Rendering
                 brickPositions = new Vector3[maxBrickCountPerAxisInSubCell * maxBrickCountPerAxisInSubCell * maxBrickCountPerAxisInSubCell];
             }
 
+#if OPTIMISATION_IDISPOSABLE
             public void Dispose()
             {
                 Dispose(true);
@@ -121,6 +122,21 @@ namespace UnityEngine.Rendering
                     readbackCountBuffers[i].Release();
                 }
             }
+#else
+            public void Dispose()
+            {
+                RenderTexture.ReleaseTemporary(sceneSDF);
+                RenderTexture.ReleaseTemporary(sceneSDF2);
+                RenderTexture.ReleaseTemporary(dummyRenderTarget);
+                probeVolumesBuffer.Release();
+
+                for (int i = 0; i <= maxSubdivisionLevelInSubCell; i++)
+                {
+                    bricksBuffers[i].Release();
+                    readbackCountBuffers[i].Release();
+                }
+            }
+#endif // OPTIMISATION_IDISPOSABLE
         }
 
         static readonly int _BricksToClear = Shader.PropertyToID("_BricksToClear");
@@ -267,8 +283,14 @@ namespace UnityEngine.Rendering
 
                 bool IsParentBrickInProbeVolume(Vector3Int parentSubCellPos, float minBrickSize, int brickSize)
                 {
+#if OPTIMISATION
                     Vector3 center = (Vector3)parentSubCellPos * minBrickSize + brickSize * minBrickSize * Vector3.one / 2.0f;
                     Bounds parentAABB = new Bounds(center, brickSize * minBrickSize * Vector3.one);
+#else
+                    Vector3 center = (Vector3)parentSubCellPos * minBrickSize + Vector3.one * brickSize * minBrickSize / 2.0f;
+                    Bounds parentAABB = new Bounds(center, Vector3.one * brickSize * minBrickSize);
+
+#endif // OPTIMISATION
 
                     bool generateParentBrick = false;
                     foreach (var probeVolume in probeVolumes)

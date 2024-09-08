@@ -72,11 +72,16 @@ namespace UnityEngine.Rendering.Universal
         /// Nearest-Neighbor filtering
         Point,
 
+#if CUSTOM_URP
         /// FidelityFX Super Resolution
         FSR,
 
         /// Snapdragon Game Super Resolution
         SGSR
+#else
+        /// FidelityFX Super Resolution
+        FSR
+#endif // CUSTOM_URP
     }
 
     /// <summary>
@@ -1166,8 +1171,10 @@ namespace UnityEngine.Rendering.Universal
         /// <summary> Keyword used for high quality Subpixel Morphological Anti-aliasing (SMAA). </summary>
         public const string SmaaHigh = "_SMAA_PRESET_HIGH";
 
+#if CUSTOM_URP
         /// <summary> Keyword used for ultra quality Subpixel Morphological Anti-aliasing (SMAA). </summary>
         public const string SmaaUltra = "_SMAA_PRESET_ULTRA";
+#endif // CUSTOM_URP
 
         /// <summary> Keyword used for generic Panini Projection. </summary>
         public const string PaniniGeneric = "_GENERIC";
@@ -1226,8 +1233,10 @@ namespace UnityEngine.Rendering.Universal
         /// <summary> Keyword used for Robust Contrast-Adaptive Sharpening (RCAS) when doing upsampling, after EASU has ran and with HDR Display output. </summary>
         public const string EasuRcasAndHDRInput = "_EASU_RCAS_AND_HDR_INPUT";
 
+#if CUSTOM_URP
         /// <summary> Keyword used for Snapdragon Game Super Resolution. </summary>
         public const string Sgsr = "_SGSR";
+#endif // CUSTOM_URP
         
         /// <summary> Keyword used for Gamma 2.0. </summary>
         public const string Gamma20 = "_GAMMA_20";

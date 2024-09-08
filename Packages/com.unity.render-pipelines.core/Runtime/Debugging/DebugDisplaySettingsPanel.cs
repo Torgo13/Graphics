@@ -56,6 +56,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Disposes the panel
         /// </summary>
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -66,6 +67,12 @@ namespace UnityEngine.Rendering
         {
             Clear();
         }
+#else
+        public void Dispose()
+        {
+            Clear();
+        }
+#endif // OPTIMISATION_IDISPOSABLE
 
         /// <summary>
         /// Default constructor

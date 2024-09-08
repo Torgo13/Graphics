@@ -246,6 +246,8 @@ namespace UnityEditor.Rendering.LookDev
 
         private bool disposedValue = false; // To detect redundant calls
 
+        /// <summary>Disposable behaviour</summary>
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -262,6 +264,18 @@ namespace UnityEditor.Rendering.LookDev
                 disposedValue = true;
             }
         }
+#else
+        void IDisposable.Dispose()
+        {
+            if (!disposedValue)
+            {
+                if (cameraSynced)
+                    EditorApplication.update -= SynchronizeCameraStates;
+
+                disposedValue = true;
+            }
+        }
+#endif // OPTIMISATION_IDISPOSABLE
 
         internal bool HasLibraryAssetChanged(EnvironmentLibrary environmentLibrary)
         {
@@ -394,7 +408,11 @@ namespace UnityEditor.Rendering.LookDev
             environment = null;
 
             GUID storedGUID;
+#if OPTIMISATION
             string[] GUIDAndLocalIDInFile = m_EnvironmentGUID.Split(',');
+#else
+            string[] GUIDAndLocalIDInFile = m_EnvironmentGUID.Split(new[] { ',' });
+#endif // OPTIMISATION
             GUID.TryParse(GUIDAndLocalIDInFile[0], out storedGUID);
             if (storedGUID.Empty())
                 return;
@@ -408,8 +426,16 @@ namespace UnityEditor.Rendering.LookDev
                 object[] loaded = AssetDatabase.LoadAllAssetsAtPath(path);
                 for (int i = 0; i < loaded.Length; ++i)
                 {
+#if OPTIMISATION
+#else
+                    string garbage;
+#endif // OPTIMISATION
                     long testedLocalIndex;
+#if OPTIMISATION
                     if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier((UnityEngine.Object)loaded[i], out _, out testedLocalIndex)
+#else
+                    if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier((UnityEngine.Object)loaded[i], out garbage, out testedLocalIndex)
+#endif // OPTIMISATION
                         && testedLocalIndex == localIDInFile)
                     {
                         environment = loaded[i] as Environment;

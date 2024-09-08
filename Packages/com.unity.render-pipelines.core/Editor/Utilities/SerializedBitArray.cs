@@ -258,7 +258,11 @@ namespace UnityEditor.Rendering
         /// <param name="serializedProperty">serializedProperty must match its path</param>
         /// <param name="bitIndex"></param>
         /// <returns></returns>
+#if SAFETY
         protected bool HasBitMultipleDifferentValue_For64Bits(string propertyPath, SerializedProperty serializedProperty, uint bitIndex)
+#else
+        unsafe protected bool HasBitMultipleDifferentValue_For64Bits(string propertyPath, SerializedProperty serializedProperty, uint bitIndex)
+#endif // SAFETY
         {
             if (!serializedProperty.hasMultipleDifferentValues)
                 return false;

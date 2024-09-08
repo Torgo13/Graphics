@@ -108,7 +108,17 @@ namespace UnityEngine.Rendering.UI
         /// <returns>Previous widget UI handler, parent if there is none.</returns>
         public virtual DebugUIHandlerWidget Previous()
         {
+#if OPTIMISATION
             return previousUIHandler != null ? previousUIHandler : parentUIHandler;
+#else
+            if (previousUIHandler != null)
+                return previousUIHandler;
+
+            if (parentUIHandler != null)
+                return parentUIHandler;
+
+            return null;
+#endif // OPTIMISATION
         }
 
         /// <summary>

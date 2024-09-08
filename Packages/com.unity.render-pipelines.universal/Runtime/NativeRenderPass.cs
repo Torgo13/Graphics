@@ -277,7 +277,13 @@ namespace UnityEngine.Rendering.Universal
 
         bool IsDepthOnlyRenderTexture(RenderTexture t)
         {
+#if OPTIMISATION
             return t.graphicsFormat == GraphicsFormat.None;
+#else
+            if (t.graphicsFormat == GraphicsFormat.None)
+                return true;
+            return false;
+#endif // OPTIMISATION
         }
 
         internal void SetNativeRenderPassAttachmentList(ScriptableRenderPass renderPass, ref CameraData cameraData, RTHandle passColorAttachment, RTHandle passDepthAttachment, ClearFlag finalClearFlag, Color finalClearColor)

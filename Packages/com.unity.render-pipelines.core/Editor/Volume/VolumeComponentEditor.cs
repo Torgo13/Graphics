@@ -91,7 +91,11 @@ namespace UnityEditor.Rendering
                 if (RenderPipelineManager.currentPipeline == null)
                     return false;
 
+#if OPTIMISATION
                 if (pipelineTypes.Length == 0)
+#else
+                if (!pipelineTypes.Any())
+#endif // OPTIMISATION
                     return true;
 
                 return pipelineTypes.Contains(RenderPipelineManager.currentPipeline.GetType());

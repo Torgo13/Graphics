@@ -307,7 +307,12 @@ namespace UnityEngine.Rendering
                 serializedProfiles.Add(item);
             }
 
+#if OPTIMISATION
             serializedBakingSets.AddRange(bakingSets);
+#else
+            foreach (var set in bakingSets)
+                serializedBakingSets.Add(set);
+#endif // OPTIMISATION
         }
 
         internal BakingSet CreateNewBakingSet(string name)

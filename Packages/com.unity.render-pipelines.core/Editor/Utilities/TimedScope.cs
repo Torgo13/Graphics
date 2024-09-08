@@ -46,7 +46,11 @@ namespace UnityEditor.Rendering
         /// </summary>
         /// <param name="durationMsPtr">The location to write the duration in milliseconds to.</param>
         /// <returns>A <see cref="TimedScope"/></returns>
+#if SAFETY
         public static TimedScope FromPtr([DisallowNull] double* durationMsPtr)
+#else
+        public static unsafe TimedScope FromPtr([DisallowNull] double* durationMsPtr)
+#endif // SAFETY
         {
             return new TimedScope(durationMsPtr);
         }

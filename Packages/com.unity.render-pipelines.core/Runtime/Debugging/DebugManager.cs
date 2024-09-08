@@ -252,7 +252,7 @@ namespace UnityEngine.Rendering
         /// </summary>
         /// <param name="panelIndex">The panelIndex for the panel to get the name</param>
         /// <returns>The display name of the panel, or empty string otherwise</returns>
-        public string PanelDiplayName(int panelIndex)
+        public string PanelDiplayName([DisallowNull] int panelIndex)
         {
             if (panelIndex < 0 || panelIndex > m_Panels.Count - 1)
                 return string.Empty;

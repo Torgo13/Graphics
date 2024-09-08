@@ -84,14 +84,19 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Finalizer.
         /// </summary>
+#if OPTIMISATION_IDISPOSABLE
         ~TextureCurve()
         {
             Dispose(false);
         }
+#else
+        ~TextureCurve() { }
+#endif // OPTIMISATION_IDISPOSABLE
 
         /// <summary>
         /// Cleans up the internal texture resource.
         /// </summary>
+#if OPTIMISATION_IDISPOSABLE
         public void Dispose()
         {
             Dispose(true);
@@ -102,17 +107,26 @@ namespace UnityEngine.Rendering
         {
             Release();
         }
+#else
+        [Obsolete("Please use Release() instead.")]
+        public void Dispose() { }
+#endif // OPTIMISATION_IDISPOSABLE
 
         /// <summary>
         /// Releases the internal texture resource.
         /// </summary>
         public void Release()
         {
+#if SAFETY
             if (m_Texture != null)
             {
                 CoreUtils.Destroy(m_Texture);
                 m_Texture = null;
             }
+#else
+            CoreUtils.Destroy(m_Texture);
+            m_Texture = null;
+#endif // SAFETY
         }
 
         /// <summary>

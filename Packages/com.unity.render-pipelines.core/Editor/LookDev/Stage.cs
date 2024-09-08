@@ -104,7 +104,12 @@ namespace UnityEditor.Rendering.LookDev
                 return;
 
             SceneManager.MoveGameObjectToScene(gameObject, m_PreviewScene);
+#if OPTIMISATION
             gameObject.transform.SetPositionAndRotation(position, rotation);
+#else
+            gameObject.transform.position = position;
+            gameObject.transform.rotation = rotation;
+#endif // OPTIMISATION
             if (persistent)
                 m_PersistentGameObjects.Add(gameObject);
             else
@@ -194,13 +199,28 @@ namespace UnityEditor.Rendering.LookDev
             go.hideFlags = HideFlags.HideAndDontSave;
             go.layer = k_PreviewCullingLayerIndex;
 
+#if OPTIMISATION_TRYGET
             if (go.TryGetComponent<MeshRenderer>(out var meshRenderer))
+#else
+            var meshRenderer = go.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+#endif // OPTIMISATION_TRYGET
                 meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
+#if OPTIMISATION_TRYGET
             if (go.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
+#else
+            var skinnedMeshRenderer = go.GetComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
+#endif // OPTIMISATION_TRYGET
                 skinnedMeshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
+#if OPTIMISATION_TRYGET
             if (go.TryGetComponent<LineRenderer>(out var lineRenderer))
+#else
+            var lineRenderer = go.GetComponent<LineRenderer>();
+            if (lineRenderer != null)
+#endif // OPTIMISATION_TRYGET
                 lineRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
             var volumes = go.GetComponents<UnityEngine.Rendering.Volume>();
@@ -274,19 +294,29 @@ namespace UnityEditor.Rendering.LookDev
             }
         }
 
+#if OPTIMISATION_IDISPOSABLE
         ~Stage() => Dispose(false);
+#else
+        ~Stage() => CleanUp();
+#endif // OPTIMISATION_IDISPOSABLE
 
         /// <summary>Clear and close the stage's scene.</summary>
         public void Dispose()
         {
+#if OPTIMISATION_IDISPOSABLE
             Dispose(true);
+#else
+            CleanUp();
+#endif // OPTIMISATION_IDISPOSABLE
             GC.SuppressFinalize(this);
         }
 
+#if OPTIMISATION_IDISPOSABLE
         protected virtual void Dispose(bool disposing)
         {
             CleanUp();
         }
+#endif // OPTIMISATION_IDISPOSABLE
     }
 
     class StageCache : IDisposable
@@ -378,17 +408,27 @@ namespace UnityEditor.Rendering.LookDev
             }
         }
 
+#if OPTIMISATION_IDISPOSABLE
         ~StageCache() => Dispose(false);
+#else
+        ~StageCache() => CleanUp();
+#endif // OPTIMISATION_IDISPOSABLE
 
         public void Dispose()
         {
+#if OPTIMISATION_IDISPOSABLE
             Dispose(true);
+#else
+            CleanUp();
+#endif // OPTIMISATION_IDISPOSABLE
             GC.SuppressFinalize(this);
         }
 
+#if OPTIMISATION_IDISPOSABLE
         protected virtual void Dispose(bool disposing)
         {
             CleanUp();
         }
+#endif // OPTIMISATION_IDISPOSABLE
     }
 }

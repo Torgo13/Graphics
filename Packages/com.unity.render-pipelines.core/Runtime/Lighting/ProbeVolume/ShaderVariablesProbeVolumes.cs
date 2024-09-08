@@ -32,7 +32,11 @@ namespace UnityEngine.Rendering
     }
 
     [GenerateHLSL(needAccessors = false, generateCBuffer = true, constantRegister = (int)APVConstantBufferRegister.GlobalRegister)]
+#if SAFETY
     internal struct ShaderVariablesProbeVolumes
+#else
+    internal unsafe struct ShaderVariablesProbeVolumes
+#endif // SAFETY
     {
         public Vector4 _PoolDim_CellInMeters;
         public Vector4 _MinCellPos_Noise;

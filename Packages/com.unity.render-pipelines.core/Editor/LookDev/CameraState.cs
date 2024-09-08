@@ -78,8 +78,13 @@ namespace UnityEditor.Rendering.LookDev
                 screenPoint.x * 2f / screen.width - 1f,
                 screenPoint.y * 2f / screen.height - 1f);
             return pivot
+#if OPTIMISATION
                 - normalizedScreenPoint.y * verticalDistance * up
                 - aspect * normalizedScreenPoint.x * verticalDistance * right;
+#else
+                - up * verticalDistance * normalizedScreenPoint.y
+                - right * verticalDistance * aspect * normalizedScreenPoint.x;
+#endif // OPTIMISATION
         }
 
         //Pivot is always on center axis by construction
@@ -92,7 +97,12 @@ namespace UnityEditor.Rendering.LookDev
         /// <param name="camera">The camera to update</param>
         public void UpdateCamera(Camera camera)
         {
+#if OPTIMISATION
             camera.transform.SetPositionAndRotation(position, rotation);
+#else
+            camera.transform.rotation = rotation;
+            camera.transform.position = position;
+#endif // OPTIMISATION
             camera.nearClipPlane = nearClip;
             camera.farClipPlane = farClip;
             camera.fieldOfView = fieldOfView;

@@ -315,7 +315,11 @@ namespace UnityEditor.Rendering
             var style = new GUIStyle { normal = { background = Texture2D.whiteTexture } };
             GUI.color = new Color(0.82f, 0.82f, 0.82f, 1);
 
+#if OPTIMISATION
             labelPosition = handlePosition + HandleUtility.GetHandleSize(handlePosition) * offsetFromHandle * Handles.inverseMatrix.MultiplyVector(Vector3.up);
+#else
+            labelPosition = handlePosition + Handles.inverseMatrix.MultiplyVector(Vector3.up) * HandleUtility.GetHandleSize(handlePosition) * offsetFromHandle;
+#endif // OPTIMISATION
             Handles.Label(labelPosition, labelText, style);
         }
 

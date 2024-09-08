@@ -1,3 +1,5 @@
+#define OPTIMISATION
+
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -868,10 +870,8 @@ namespace UnityEngine.Rendering.Universal.Internal
             else
                 ConfigureTarget(m_AdditionalLightsShadowmapHandle);
 
-            // SLZ MODIFIED
-            
+#if OPTIMISATION // SLZ
             // Don't clear if the shadowcaster pass isn't used.
-            //ConfigureClear(ClearFlag.All, Color.black);
             if (m_CreateEmptyShadowmap)
             {
                 ConfigureClear(ClearFlag.None, Color.black);
@@ -880,8 +880,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             {
                 ConfigureClear(ClearFlag.All, Color.black);
             }
-
-            // END SLZ MODIFIED
+#else
+            ConfigureClear(ClearFlag.All, Color.black);
+#endif // OPTIMISATION
         }
 
         /// <inheritdoc/>

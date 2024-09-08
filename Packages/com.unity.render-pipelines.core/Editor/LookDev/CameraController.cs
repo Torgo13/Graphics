@@ -181,7 +181,11 @@ namespace UnityEditor.Rendering.LookDev
             flySpeedNormalized -= scrollWheelDelta * .01f;
             string cameraSpeedDisplayValue = flySpeed.ToString(flySpeed < 0.1f ? "F2" : flySpeed < 10f ? "F1" : "F0");
             if (flySpeed < 0.1f)
+#if OPTIMISATION
                 cameraSpeedDisplayValue = cameraSpeedDisplayValue.TrimStart('0');
+#else
+                cameraSpeedDisplayValue = cameraSpeedDisplayValue.TrimStart(new Char[] { '0' });
+#endif // OPTIMISATION
             GUIContent cameraSpeedContent = EditorGUIUtility.TrTempContent(
                 $"{cameraSpeedDisplayValue}x");
             m_Window.ShowNotification(cameraSpeedContent, .5f);
@@ -313,7 +317,11 @@ namespace UnityEditor.Rendering.LookDev
                 m_FlySpeedAccelerated = 9;
             else
                 m_FlySpeedAccelerated *= Mathf.Pow(k_FlyAcceleration, deltaTime);
+#if OPTIMISATION
             result = deltaTime * m_FlySpeedAccelerated * speed * m_MotionDirection.normalized;
+#else
+            result = m_MotionDirection.normalized * m_FlySpeedAccelerated * speed * deltaTime;
+#endif // OPTIMISATION
             return result;
         }
 
@@ -325,7 +333,10 @@ namespace UnityEditor.Rendering.LookDev
 
         bool GetKeyCombinationByID(string ID, out KeyCombination combination)
         {
-            using var sequence = ShortcutManager.instance.GetShortcutBinding(ID).keyCombinationSequence.GetEnumerator();
+#if OPTIMISATION
+            using
+#endif // OPTIMISATION
+            var sequence = ShortcutManager.instance.GetShortcutBinding(ID).keyCombinationSequence.GetEnumerator();
             if (sequence.MoveNext()) //have a first entry
             {
                 combination = new KeyCombination(sequence.Current);
@@ -493,7 +504,11 @@ namespace UnityEditor.Rendering.LookDev
                     throw new ArgumentException("Unknown ViewIndex");
             }
 
-            m_CameraState = stateToSwitch;
+#if OPTIMISATION
+#else
+            if (stateToSwitch != m_CameraState)
+#endif // OPTIMISATION
+                m_CameraState = stateToSwitch;
             m_CurrentViewIndex = index;
         }
 

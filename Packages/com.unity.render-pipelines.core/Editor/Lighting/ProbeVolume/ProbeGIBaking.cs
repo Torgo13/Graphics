@@ -183,15 +183,21 @@ namespace UnityEngine.Rendering
             public BakingSetupProfiling(Stages stage) : base(stage, ref currentStage) { }
             public override Stages GetLastStep() => Stages.None;
             public static void GetProgressRange(out float progress0, out float progress1) { float s = 1/(float)Stages.None; progress0 = (float)currentStage*s; progress1 = progress0+s; }
+
+#if OPTIMISATION_IDISPOSABLE
             public void Dispose()
             {
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
+
             protected virtual void Dispose(bool disposing)
             {
                 OnDispose(ref currentStage);
             }
+#else
+            public void Dispose() { OnDispose(ref currentStage); }
+#endif // OPTIMISATION_IDISPOSABLE
         }
         public class BakingCompleteProfiling : BakingProfiling<BakingCompleteProfiling.Stages>, IDisposable
         {
@@ -211,15 +217,21 @@ namespace UnityEngine.Rendering
             public BakingCompleteProfiling(Stages stage) : base(stage, ref currentStage) { }
             public override Stages GetLastStep() => Stages.None;
             public static void GetProgressRange(out float progress0, out float progress1) { float s = 1/(float)Stages.None; progress0 = (float)currentStage*s; progress1 = progress0+s; }
+
+#if OPTIMISATION_IDISPOSABLE
             public void Dispose()
             {
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
+
             protected virtual void Dispose(bool disposing)
             {
                 OnDispose(ref currentStage);
             }
+#else
+            public void Dispose() { OnDispose(ref currentStage); }
+#endif // OPTIMISATION_IDISPOSABLE
         }
 
 
@@ -998,6 +1010,7 @@ namespace UnityEngine.Rendering
 
                 m_BakedCells[cell.index] = cell;
             }
+            fetchScope.Dispose();
 
             RestorePhysicsComponentsAfterBaking();
             CleanupOccluders();
@@ -1066,6 +1079,8 @@ namespace UnityEngine.Rendering
                 WriteBakingCells(data, bakingCellsList);
                 data.ResolveSharedCellData();
             }
+
+            writeScope.Dispose();
 
             var probeVolumes = GetProbeVolumeList();
             foreach (var probeVolume in probeVolumes)
@@ -1380,7 +1395,11 @@ namespace UnityEngine.Rendering
         ///   CellSharedData: a binary flat file containing bricks data
         ///   CellSupportData: a binary flat file containing debug data (stripped from player builds if building without debug shaders)
         /// </summary>
+#if SAFETY
         static void WriteBakingCells(ProbeVolumePerSceneData data, List<BakingCell> bakingCells)
+#else
+        unsafe static void WriteBakingCells(ProbeVolumePerSceneData data, List<BakingCell> bakingCells)
+#endif // SAFETY
         {
             data.GetBlobFileNames(out var cellDataFilename, out var cellOptionalDataFilename, out var cellSharedDataFilename, out var cellSupportDataFilename);
 
@@ -1568,36 +1587,45 @@ namespace UnityEngine.Rendering
             if (!AssetDatabase.MakeEditable(outputPaths.ToArray()))
                 Debug.LogWarning($"Failed to make one or more probe volume output file(s) writable. This could result in baked data not being properly written to disk. {string.Join(",", outputPaths)}");
 
-            using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+#if SAFETY
+#else
+            unsafe
             {
-                WriteNativeArray(fs, probesL0L1Rx);
-                WriteNativeArray(fs, probesL1GL1Ry);
-                WriteNativeArray(fs, probesL1BL1Rz);
-            }
-
-            if (asset.bands == ProbeVolumeSHBands.SphericalHarmonicsL2)
-            {
-                using (var fs = new System.IO.FileStream(cellOptionalDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+#endif // SAFETY
+                using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
                 {
-                    WriteNativeArray(fs, probesL2_0);
-                    WriteNativeArray(fs, probesL2_1);
-                    WriteNativeArray(fs, probesL2_2);
-                    WriteNativeArray(fs, probesL2_3);
+                    WriteNativeArray(fs, probesL0L1Rx);
+                    WriteNativeArray(fs, probesL1GL1Ry);
+                    WriteNativeArray(fs, probesL1BL1Rz);
                 }
-            }
 
-            using (var fs = new System.IO.FileStream(cellSharedDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
-            {
-                WriteNativeArray(fs, bricks);
-                WriteNativeArray(fs, validityNeighbourMask);
+                if (asset.bands == ProbeVolumeSHBands.SphericalHarmonicsL2)
+                {
+                    using (var fs = new System.IO.FileStream(cellOptionalDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+                    {
+                        WriteNativeArray(fs, probesL2_0);
+                        WriteNativeArray(fs, probesL2_1);
+                        WriteNativeArray(fs, probesL2_2);
+                        WriteNativeArray(fs, probesL2_3);
+                    }
+                }
+
+                using (var fs = new System.IO.FileStream(cellSharedDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+                {
+                    WriteNativeArray(fs, bricks);
+                    WriteNativeArray(fs, validityNeighbourMask);
+                }
+                using (var fs = new System.IO.FileStream(cellSupportDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+                {
+                    WriteNativeArray(fs, positions);
+                    WriteNativeArray(fs, touchupVolumeInteraction);
+                    WriteNativeArray(fs, validity);
+                    WriteNativeArray(fs, offsets);
+                }
+#if SAFETY
+#else
             }
-            using (var fs = new System.IO.FileStream(cellSupportDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
-            {
-                WriteNativeArray(fs, positions);
-                WriteNativeArray(fs, touchupVolumeInteraction);
-                WriteNativeArray(fs, validity);
-                WriteNativeArray(fs, offsets);
-            }
+#endif // SAFETY
 
             AssetDatabase.ImportAsset(cellDataFilename);
 
@@ -1620,7 +1648,11 @@ namespace UnityEngine.Rendering
             EditorUtility.SetDirty(data);
         }
 
+#if SAFETY
          static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
+#else
+        unsafe static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
+#endif // SAFETY
         {
             data.GetBlobFileNames(out var cellDataFilename, out var cellOptionalDataFilename, out var cellSharedDataFilename, out var cellSupportDataFilename);
 
@@ -1685,23 +1717,32 @@ namespace UnityEngine.Rendering
             if (!AssetDatabase.MakeEditable(outputPaths.ToArray()))
                 Debug.LogWarning($"Failed to make one or more probe volume output file(s) writable. This could result in baked data not being properly written to disk. {string.Join(",", outputPaths)}");
 
-            using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+#if SAFETY
+#else
+            unsafe
             {
-                WriteNativeArray(fs, probesL0L1Rx);
-                WriteNativeArray(fs, probesL1GL1Ry);
-                WriteNativeArray(fs, probesL1BL1Rz);
-            }
-
-            if (asset.bands == ProbeVolumeSHBands.SphericalHarmonicsL2)
-            {
-                using (var fs = new System.IO.FileStream(cellOptionalDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+#endif // SAFETY
+                using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
                 {
-                    WriteNativeArray(fs, probesL2_0);
-                    WriteNativeArray(fs, probesL2_1);
-                    WriteNativeArray(fs, probesL2_2);
-                    WriteNativeArray(fs, probesL2_3);
+                    WriteNativeArray(fs, probesL0L1Rx);
+                    WriteNativeArray(fs, probesL1GL1Ry);
+                    WriteNativeArray(fs, probesL1BL1Rz);
                 }
+
+                if (asset.bands == ProbeVolumeSHBands.SphericalHarmonicsL2)
+                {
+                    using (var fs = new System.IO.FileStream(cellOptionalDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+                    {
+                        WriteNativeArray(fs, probesL2_0);
+                        WriteNativeArray(fs, probesL2_1);
+                        WriteNativeArray(fs, probesL2_2);
+                        WriteNativeArray(fs, probesL2_3);
+                    }
+                }
+#if SAFETY
+#else
             }
+#endif // SAFETY
         }
 
         private static void DeduplicateProbePositions(in Vector3[] probePositions, in int[] brickSubdivLevel, Dictionary<int, int> positionToIndex, BakingBatch batch,

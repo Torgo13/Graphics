@@ -87,7 +87,9 @@ namespace UnityEngine.Rendering
         public void Dispose()
         {
             Dispose(true);
+#if OPTIMISATION_IDISPOSABLE
             GC.SuppressFinalize(this);
+#endif // OPTIMISATION_IDISPOSABLE
         }
 
         /// <summary>
@@ -120,7 +122,7 @@ namespace UnityEngine.Rendering
         /// <param name="height">Initial reference rendering height.</param>
         /// <param name="useLegacyDynamicResControl">Use legacy hardware DynamicResolution control in RTHandle system.</param>
         [Obsolete("useLegacyDynamicResControl is deprecated. Please use SetHardwareDynamicResolutionState() instead.")]
-        public void Initialize(int width, int height, bool useLegacyDynamicResControl)
+        public void Initialize(int width, int height, bool useLegacyDynamicResControl = false)
         {
             Initialize(width, height);
 
@@ -359,7 +361,11 @@ namespace UnityEngine.Rendering
         /// <returns>Maximum allocated height of the RTHandle System.</returns>
         public int GetMaxHeight() { return m_MaxHeights; }
 
+#if OPTIMISATION_IDISPOSABLE
         protected virtual void Dispose(bool disposing)
+#else
+        void Dispose(bool disposing)
+#endif // OPTIMISATION_IDISPOSABLE
         {
             if (disposing)
             {
@@ -525,7 +531,7 @@ namespace UnityEngine.Rendering
         )
         {
             bool enableMSAA = msaaSamples != MSAASamples.None;
-            if (!enableMSAA && bindTextureMS)
+            if (!enableMSAA && bindTextureMS == true)
             {
                 Debug.LogWarning("RTHandle allocated without MSAA but with bindMS set to true, forcing bindMS to false.");
                 bindTextureMS = false;
@@ -796,14 +802,14 @@ namespace UnityEngine.Rendering
         {
             bool enableMSAA = msaaSamples != MSAASamples.None;
             // Here user made a mistake in setting up msaa/bindMS, hence the warning
-            if (!enableMSAA && bindTextureMS)
+            if (!enableMSAA && bindTextureMS == true)
             {
                 Debug.LogWarning("RTHandle allocated without MSAA but with bindMS set to true, forcing bindMS to false.");
                 bindTextureMS = false;
             }
 
             // MSAA Does not support random read/write.
-            if (enableMSAA && enableRandomWrite)
+            if (enableMSAA && (enableRandomWrite == true))
             {
                 Debug.LogWarning("RTHandle that is MSAA-enabled cannot allocate MSAA RT with 'enableRandomWrite = true'.");
                 enableRandomWrite = false;

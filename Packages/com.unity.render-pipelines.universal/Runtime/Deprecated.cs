@@ -163,6 +163,10 @@ namespace UnityEngine.Rendering.Universal
                     case 4: return ShadowCascadesOption.FourCascades;
                     default: throw new InvalidOperationException("Cascade count is not compatible with obsolete API, please use shadowCascadeCount instead.");
                 }
+#if BUGFIX
+#else
+                ;
+#endif // BUGFIX
             }
             set
             {

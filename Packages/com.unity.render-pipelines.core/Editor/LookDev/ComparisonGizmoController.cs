@@ -211,7 +211,11 @@ namespace UnityEditor.Rendering.LookDev
                 if (absDistanceToPlane < ComparisonGizmoState.thicknessSelected)
                     selected = Selected.PlaneSeparator;
 
+#if OPTIMISATION
                 Vector2 circleCenter = m_State.center + m_State.length * side * orthoPlaneNormal;
+#else
+                Vector2 circleCenter = m_State.center + side * orthoPlaneNormal * m_State.length;
+#endif // OPTIMISATION
                 float d = Vector2.Distance(normalizedMousePosition, circleCenter);
                 if (d <= ComparisonGizmoState.circleRadiusSelected)
                     selected = side > 0.0f ? Selected.NodeFirstView : Selected.NodeSecondView;
