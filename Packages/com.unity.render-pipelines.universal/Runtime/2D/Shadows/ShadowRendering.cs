@@ -19,7 +19,9 @@ namespace UnityEngine.Rendering.Universal
         private static readonly int k_ShadowModelMatrixID = Shader.PropertyToID("_ShadowModelMatrix");
         private static readonly int k_ShadowModelInvMatrixID = Shader.PropertyToID("_ShadowModelInvMatrix");
         private static readonly int k_ShadowModelScaleID = Shader.PropertyToID("_ShadowModelScale");
+#if OPTIMISATION_SHADERPARAMS
         private static readonly int k_ShadowTex = Shader.PropertyToID("_ShadowTex");
+#endif // OPTIMISATION_SHADERPARAMS
 
         private static readonly ProfilingSampler m_ProfilingSamplerShadows = new ProfilingSampler("Draw 2D Shadow Texture");
         private static readonly ProfilingSampler m_ProfilingSamplerShadowsA = new ProfilingSampler("Draw 2D Shadows (A)");
@@ -151,7 +153,11 @@ namespace UnityEngine.Rendering.Universal
             var colorChannel = shadowIndex % 4;
             var textureIndex = shadowIndex / 4;
 
+#if OPTIMISATION_SHADERPARAMS
             cmdBuffer.SetGlobalTexture(k_ShadowTex, m_LightInputTextures[textureIndex]);
+#else
+            cmdBuffer.SetGlobalTexture("_ShadowTex", m_LightInputTextures[textureIndex]);
+#endif // OPTIMISATION_SHADERPARAMS
             cmdBuffer.SetGlobalColor(k_ShadowColorMaskID, k_ColorLookup[colorChannel]);
             cmdBuffer.SetGlobalFloat(k_ShadowIntensityID, 1 - light.shadowIntensity);
             cmdBuffer.SetGlobalFloat(k_ShadowVolumeIntensityID, 1 - light.shadowVolumeIntensity);

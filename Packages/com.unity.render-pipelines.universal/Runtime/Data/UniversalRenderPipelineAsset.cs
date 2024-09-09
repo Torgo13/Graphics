@@ -83,6 +83,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         _2048 = 2048,
 
+#if CUSTOM_URP
         /// <summary>
         /// Use this for 4096x4096 shadow resolution.
         /// </summary>
@@ -92,6 +93,12 @@ namespace UnityEngine.Rendering.Universal
         /// Use this for 8192x8192 shadow resolution.
         /// </summary>
         _8192 = 8192,
+#else
+        /// <summary>
+        /// Use this for 4096x4096 shadow resolution.
+        /// </summary>
+        _4096 = 4096
+#endif // CUSTOM_URP
     }
 
     /// <summary>
@@ -375,6 +382,7 @@ namespace UnityEngine.Rendering.Universal
         [InspectorName("Nearest-Neighbor")]
         Point,
 
+#if CUSTOM_URP
         /// <summary>
         /// Unity uses the AMD FSR 1.0 technique to perform upscaling.
         /// </summary>
@@ -386,6 +394,13 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         [InspectorName("Snapdragon Game Super Resolution"), Tooltip("If the target device does not support Unity shader model 4.5, Unity falls back to the Automatic option.")]
         SGSR
+#else
+        /// <summary>
+        /// Unity uses the AMD FSR 1.0 technique to perform upscaling.
+        /// </summary>
+        [InspectorName("FidelityFX Super Resolution 1.0"), Tooltip("If the target device does not support Unity shader model 4.5, Unity falls back to the Automatic option.")]
+        FSR
+#endif // CUSTOM_URP
     }
 
     /// <summary>
@@ -441,7 +456,11 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField] internal ScriptableRendererData m_RendererData = null;
 
         // Renderer settings
+#if CUSTOM_URP
         [SerializeField] public ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
+#else
+        [SerializeField] internal ScriptableRendererData[] m_RendererDataList = new ScriptableRendererData[1];
+#endif // CUSTOM_URP
         [SerializeField] internal int m_DefaultRendererIndex = 0;
 
         // General settings
@@ -603,6 +622,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         public static readonly int AdditionalLightsDefaultShadowResolutionTierHigh = 1024;
 
+#if CUSTOM_URP
         /// <summary>
         /// The list of renderer data used by this pipeline asset.
         /// </summary>
@@ -612,6 +632,7 @@ namespace UnityEngine.Rendering.Universal
         /// The list of renderers used by this pipeline asset.
         /// </summary>
         public ReadOnlySpan<ScriptableRenderer> renderers => m_Renderers;
+#endif // CUSTOM_URP
 
 #if UNITY_EDITOR
         [NonSerialized]
@@ -1037,7 +1058,9 @@ namespace UnityEngine.Rendering.Universal
         public Downsampling opaqueDownsampling
         {
             get { return m_OpaqueDownsampling; }
+#if CUSTOM_URP
             set { m_OpaqueDownsampling = value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>
@@ -1111,7 +1134,9 @@ namespace UnityEngine.Rendering.Universal
         public LODCrossFadeDitheringType lodCrossFadeDitheringType
         {
             get { return m_LODCrossFadeDitheringType; }
+#if CUSTOM_URP
             set { m_LODCrossFadeDitheringType = value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>
@@ -1172,7 +1197,11 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsMainLightShadows
         {
             get { return m_MainLightShadowsSupported; }
+#if CUSTOM_URP
             set {
+#else
+            internal set {
+#endif // CUSTOM_URP
                 m_MainLightShadowsSupported = value;
 #if UNITY_EDITOR
                 m_AnyShadowsSupported = m_MainLightShadowsSupported || m_AdditionalLightShadowsSupported;
@@ -1186,7 +1215,11 @@ namespace UnityEngine.Rendering.Universal
         public int mainLightShadowmapResolution
         {
             get { return (int)m_MainLightShadowmapResolution; }
+#if CUSTOM_URP
             set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
+#else
+            internal set { m_MainLightShadowmapResolution = (ShadowResolution)value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>
@@ -1378,13 +1411,21 @@ namespace UnityEngine.Rendering.Universal
         public bool supportsSoftShadows
         {
             get { return m_SoftShadowsSupported; }
+#if CUSTOM_URP
             set { m_SoftShadowsSupported = value; }
+#else
+            internal set { m_SoftShadowsSupported = value; }
+#endif // CUSTOM_URP
         }
 
         /// <summary>
         /// Light default Soft Shadow Quality.
         /// </summary>
+#if CUSTOM_URP
         public SoftShadowQuality softShadowQuality
+#else
+        internal SoftShadowQuality softShadowQuality
+#endif // CUSTOM_URP
         {
             get { return m_SoftShadowQuality; }
             set { m_SoftShadowQuality = value; }
@@ -1492,7 +1533,9 @@ namespace UnityEngine.Rendering.Universal
         public bool useFastSRGBLinearConversion
         {
             get { return m_UseFastSRGBLinearConversion; }
+#if CUSTOM_URP
             set { m_UseFastSRGBLinearConversion = value; }
+#endif // CUSTOM_URP
         }
         
         /// <summary>

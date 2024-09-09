@@ -8,9 +8,6 @@ namespace UnityEngine.Rendering.Universal
     sealed class MotionVectorRenderPass : ScriptableRenderPass
     {
         #region Fields
-        internal const string k_MotionVectorTextureName = "_MotionVectorTexture";
-        internal const string k_MotionVectorDepthTextureName = "_MotionVectorDepthTexture";
-
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
 #if ENABLE_VR && ENABLE_XR_MODULE
@@ -20,7 +17,9 @@ namespace UnityEngine.Rendering.Universal
         internal const GraphicsFormat k_TargetFormat = GraphicsFormat.R16G16_SFloat;
 
         static readonly string[] s_ShaderTags = new string[] { "MotionVectors" };
+#if OPTIMISATION_SHADERPARAMS
         static readonly int k_MotionVectorTexture = Shader.PropertyToID("_MotionVectorTexture");
+#endif // OPTIMISATION_SHADERPARAMS
 
         RTHandle m_Color;
         RTHandle m_Depth;
@@ -241,7 +240,11 @@ namespace UnityEngine.Rendering.Universal
                 builder.SetRenderFunc((PassData data, RenderGraphContext context) =>
                 {
                     ExecutePass(context.renderContext, data, ref data.renderingData);
+#if OPTIMISATION_SHADERPARAMS
                     data.renderingData.commandBuffer.SetGlobalTexture(k_MotionVectorTexture, data.motionVectorColor);
+#else
+                    data.renderingData.commandBuffer.SetGlobalTexture("_MotionVectorTexture", data.motionVectorColor);
+#endif // OPTIMISATION_SHADERPARAMS
                 });
 
                 return;

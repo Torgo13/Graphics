@@ -964,8 +964,10 @@ namespace UnityEngine.Rendering.Universal
         internal static readonly int k_ShaderPropertyId_PrevViewProjM = Shader.PropertyToID("_PrevViewProjM");
         internal static readonly int k_ShaderPropertyId_ViewProjMStereo = Shader.PropertyToID("_ViewProjMStereo");
         internal static readonly int k_ShaderPropertyId_PrevViewProjMStereo = Shader.PropertyToID("_PrevViewProjMStereo");
+#if OPTIMISATION_SHADERPARAMS
         internal static readonly int k_ShaderPropertyId_Intensity = Shader.PropertyToID("_Intensity");
         internal static readonly int k_ShaderPropertyId_Clamp = Shader.PropertyToID("_Clamp");
+#endif // OPTIMISATION_SHADERPARAMS
 
         internal static void UpdateMotionBlurMatrices(ref Material material, Camera camera, XRPass xr)
         {
@@ -1005,8 +1007,13 @@ namespace UnityEngine.Rendering.Universal
 
             UpdateMotionBlurMatrices(ref material, cameraData.camera, cameraData.xr);
 
+#if OPTIMISATION_SHADERPARAMS
             material.SetFloat(k_ShaderPropertyId_Intensity, m_MotionBlur.intensity.value);
             material.SetFloat(k_ShaderPropertyId_Clamp, m_MotionBlur.clamp.value);
+#else
+            material.SetFloat("_Intensity", m_MotionBlur.intensity.value);
+            material.SetFloat("_Clamp", m_MotionBlur.clamp.value);
+#endif // OPTIMISATION_SHADERPARAMS
 
             PostProcessUtils.SetSourceSize(cmd, m_Descriptor);
 
@@ -1418,7 +1425,9 @@ namespace UnityEngine.Rendering.Universal
             // FSR is only considered "enabled" when we're performing upscaling. (downscaling uses a linear filter unconditionally)
             bool isFsrEnabled = ((cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (cameraData.upscalingFilter == ImageUpscalingFilter.FSR));
 
+#if CUSTOM_URP
             bool isSgsrEnabled = ((cameraData.imageScalingMode == ImageScalingMode.Upscaling) && (cameraData.upscalingFilter == ImageUpscalingFilter.SGSR));
+#endif // CUSTOM_URP
 
             // Reuse RCAS pass as an optional standalone post sharpening pass for TAA.
             // This avoids the cost of EASU and is available for other upscaling options.
@@ -1433,7 +1442,11 @@ namespace UnityEngine.Rendering.Universal
                 // NOTE: An ideal implementation could inline this color conversion logic into the UberPost pass, but the current code structure would make
                 //       this process very complex. Specifically, we'd need to guarantee that the uber post output is always written to a UNORM format render
                 //       target in order to preserve the precision of specially encoded color data.
+#if CUSTOM_URP
                 bool isSetupRequired = (isFxaaEnabled || isFsrEnabled || isSgsrEnabled);
+#else
+                bool isSetupRequired = (isFxaaEnabled || isFsrEnabled);
+#endif // CUSTOM_URP
 
                 // Make sure to remove any MSAA and attached depth buffers from the temporary render targets
                 var tempRtDesc = cameraData.cameraTargetDescriptor;
@@ -1532,12 +1545,14 @@ namespace UnityEngine.Rendering.Universal
                                 break;
                             }
 
+#if CUSTOM_URP
                             case ImageUpscalingFilter.SGSR:
                             {
                                 material.EnableKeyword(ShaderKeywordStrings.Sgsr);
 
                                 break;
                             }
+#endif // CUSTOM_URP
                         }
 
                         break;

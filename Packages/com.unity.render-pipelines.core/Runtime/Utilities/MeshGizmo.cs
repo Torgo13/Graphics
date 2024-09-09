@@ -11,9 +11,9 @@ namespace UnityEngine.Rendering
     class MeshGizmo : IDisposable
     {
         public static readonly int vertexCountPerCube = 24;
-#if OPTIMISATION
-        static readonly int HandleZTest = Shader.PropertyToID("_HandleZTest");
-#endif // OPTIMISATION
+#if OPTIMISATION_SHADERPARAMS
+        static readonly int k_HandleZTest = Shader.PropertyToID("_HandleZTest");
+#endif // OPTIMISATION_SHADERPARAMS
 
         public Mesh mesh;
 
@@ -90,11 +90,11 @@ namespace UnityEngine.Rendering
             mesh.SetColors(colors);
             mesh.SetIndices(indices, topology, 0);
 
-#if OPTIMISATION
-            mat.SetFloat(HandleZTest, (int)depthTest);
+#if OPTIMISATION_SHADERPARAMS
+            mat.SetFloat(k_HandleZTest, (int)depthTest);
 #else
             mat.SetFloat("_HandleZTest", (int)depthTest);
-#endif // OPTIMISATION
+#endif // OPTIMISATION_SHADERPARAMS
 
             var cmd = CommandBufferPool.Get(gizmoName ?? "Mesh Gizmo Rendering");
             cmd.DrawMesh(mesh, trs, mat, 0, 0);

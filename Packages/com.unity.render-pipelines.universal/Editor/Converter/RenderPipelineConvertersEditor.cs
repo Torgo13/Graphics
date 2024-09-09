@@ -152,7 +152,11 @@ namespace UnityEditor.Rendering.Universal
 
         void InitIfNeeded()
         {
+#if OPTIMISATION
             if (m_CoreConvertersList.Count > 0)
+#else
+            if (m_CoreConvertersList.Any())
+#endif // OPTIMISATION
                 return;
             m_CoreConvertersList = new List<RenderPipelineConverter>();
 
@@ -174,7 +178,11 @@ namespace UnityEditor.Rendering.Universal
                 m_ContainerChoices.Add(container.name);
             }
 
+#if OPTIMISATION
             if (m_ConverterContainers.Count > 0)
+#else
+            if (m_ConverterContainers.Any())
+#endif // OPTIMISATION
             {
                 GetConverters();
             }
@@ -240,7 +248,11 @@ namespace UnityEditor.Rendering.Universal
             string theme = EditorGUIUtility.isProSkin ? "dark" : "light";
             InitIfNeeded();
 
+#if OPTIMISATION
             if (m_ConverterContainers.Count > 0)
+#else
+            if (m_ConverterContainers.Any())
+#endif // OPTIMISATION
             {
                 m_SerializedObject = new SerializedObject(this);
                 converterEditorAsset.CloneTree(rootVisualElement);
@@ -285,7 +297,11 @@ namespace UnityEditor.Rendering.Universal
             // If not then Init Button should be active
             // Get all active converters
 
+#if OPTIMISATION
             if (m_ConverterStates.Count > 0)
+#else
+            if (m_ConverterStates.Any())
+#endif // OPTIMISATION
             {
                 foreach (ConverterState state in m_ConverterStates)
                 {
@@ -390,7 +406,11 @@ namespace UnityEditor.Rendering.Universal
 
         void ConverterStatusInfo(int index, VisualElement item)
         {
+#if BUGFIX
             Tuple<string, Texture2D> info = converterStateInfoDisabled;
+#else
+            Tuple<string, Texture2D> info = converterStateInfoDisabled;;
+#endif // BUGFIX
             // Check if it is active
             if (m_ConverterStates[index].isActive)
             {

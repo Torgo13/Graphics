@@ -204,7 +204,11 @@ namespace UnityEngine.Rendering.Universal
     //    val3.ToString => "85070591730234615847396907784232501249" (8.5e+37)
     //------------------------------------------------------------------------------
 
+#if OPTIMISATION_IEQUATABLE
     internal struct Int128 : IEquatable<Int128>
+#else
+    internal struct Int128
+#endif // OPTIMISATION_IEQUATABLE
     {
         private Int64 hi;
         private UInt64 lo;
@@ -235,7 +239,13 @@ namespace UnityEngine.Rendering.Universal
 
         public static bool operator ==(Int128 val1, Int128 val2)
         {
+#if OPTIMISATION_IEQUATABLE
             return val1.hi == val2.hi && val1.lo == val2.lo;
+#else
+            if ((object)val1 == (object)val2) return true;
+            else if ((object)val1 == null || (object)val2 == null) return false;
+            return (val1.hi == val2.hi && val1.lo == val2.lo);
+#endif // OPTIMISATION_IEQUATABLE
         }
 
         public static bool operator !=(Int128 val1, Int128 val2)
@@ -243,21 +253,34 @@ namespace UnityEngine.Rendering.Universal
             return !(val1 == val2);
         }
 
+#if OPTIMISATION_IEQUATABLE
         public bool Equals(Int128 other)
         {
             return this == other;
         }
+#endif // OPTIMISATION_IEQUATABLE
 
         public override bool Equals(System.Object obj)
         {
+#if OPTIMISATION_IEQUATABLE
             if (obj is Int128 other)
                 return this == other;
             return false;
+#else
+            if (obj == null || !(obj is Int128))
+                return false;
+            Int128 i128 = (Int128)obj;
+            return (i128.hi == hi && i128.lo == lo);
+#endif // OPTIMISATION_IEQUATABLE
         }
 
         public override int GetHashCode()
         {
+#if OPTIMISATION_IEQUATABLE
             return System.HashCode.Combine(hi, lo);
+#else
+            return hi.GetHashCode() ^ lo.GetHashCode();
+#endif // OPTIMISATION_IEQUATABLE
         }
 
         public static bool operator >(Int128 val1, Int128 val2)
@@ -344,7 +367,11 @@ namespace UnityEngine.Rendering.Universal
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
 
+#if OPTIMISATION_IEQUATABLE
     internal struct IntPoint : IEquatable<IntPoint>
+#else
+    internal struct IntPoint
+#endif // OPTIMISATION_IEQUATABLE
     {
         public ClipInt N;
         public ClipInt X;
@@ -384,6 +411,7 @@ namespace UnityEngine.Rendering.Universal
             return a.X != b.X || a.Y != b.Y;
         }
 
+#if OPTIMISATION_IEQUATABLE
         public bool Equals(IntPoint other)
         {
             return this == other;
@@ -395,11 +423,27 @@ namespace UnityEngine.Rendering.Universal
                 return this == other;
             return false;
         }
+#else
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj is IntPoint)
+            {
+                IntPoint a = (IntPoint)obj;
+                return (X == a.X) && (Y == a.Y);
+            }
+            else return false;
+        }
+#endif // OPTIMISATION_IEQUATABLE
 
         public override int GetHashCode()
         {
             //simply prevents a compiler warning
+#if OPTIMISATION_IEQUATABLE
             return HashCode.Combine(N, X, Y, D, NX, NY);
+#else
+            return base.GetHashCode();
+#endif // OPTIMISATION_IEQUATABLE
         }
     }// end struct IntPoint
 

@@ -1,3 +1,5 @@
+#define OPTIMISATION
+
 using System;
 using System.Collections.Generic;
 using UnityEngine.Experimental.Rendering;
@@ -97,7 +99,12 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_PassData = new PassData();
             m_ProfilerTag = profilerTag;
             m_ProfilingSampler = new ProfilingSampler(profilerTag);
+#if OPTIMISATION
             m_ShaderTagIdList.AddRange(shaderTagIds);
+#else
+            foreach (ShaderTagId sid in shaderTagIds)
+                m_ShaderTagIdList.Add(sid);
+#endif // OPTIMISATION
             renderPassEvent = evt;
             m_FilteringSettings = new FilteringSettings(renderQueueRange, layerMask);
             m_RenderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);

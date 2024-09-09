@@ -156,7 +156,11 @@ namespace UnityEditor.Rendering.Universal
                 }
             }
 
+#if OPTIMISATION
             if (containerType != null && converterTypes.Count > 0)
+#else
+            if (containerType != null && converterTypes.Any())
+#endif // OPTIMISATION
             {
                 RunInBatchMode(containerType, converterTypes, converterFilter);
             }

@@ -168,7 +168,11 @@ namespace UnityEditor.Rendering
                         ).ToList();
 
                     // if there are any, assume the material has been upgraded
+#if OPTIMISATION
                     if (matchingUpgraders.Count > 0)
+#else
+                    if (matchingUpgraders.Any())
+#endif // OPTIMISATION
                     {
                         result |= SerializedShaderPropertyUsage.UsedByUpgraded;
 

@@ -640,7 +640,11 @@ namespace UnityEditor.Rendering
             }
 
             // if any scenes should be considered, do the same for clips used by scenes
+#if OPTIMISATION
             if (scenePaths.Length > 0)
+#else
+            if (scenePaths.Any())
+#endif // OPTIMISATION
             {
                 GetClipDependencyMappings(clipPaths, scenePaths, out var clipSceneDependents, out var sceneDependencies);
                 GatherClipsUsageInDependentScenes(

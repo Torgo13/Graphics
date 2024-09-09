@@ -120,8 +120,8 @@ namespace UnityEngine.Rendering
         static RTHandle m_WhiteTexture2DArrayRTH;
         static RTHandle m_WhiteTextureRTH;
 #if OPTIMISATION_SHADERPARAMS
-        static readonly int m_TargetArray = Shader.PropertyToID("_TargetArray");
-        static readonly int m_Target = Shader.PropertyToID("_Target");
+        static readonly int k_TargetArray = Shader.PropertyToID("_TargetArray");
+        static readonly int k_Target = Shader.PropertyToID("_Target");
 #endif // OPTIMISATION_SHADERPARAMS
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace UnityEngine.Rendering
             // Clear this type of target on metal devices (output type nor compatible: float4 vs uint)
             int kernel = clearR32_UIntShader.FindKernel("ClearUIntTextureArray");
 #if OPTIMISATION_SHADERPARAMS
-            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, m_TargetArray, blackUIntTexture2DArray);
+            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, k_TargetArray, blackUIntTexture2DArray);
 #else
             cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, "_TargetArray", blackUIntTexture2DArray);
 #endif // OPTIMISATION_SHADERPARAMS
@@ -245,7 +245,7 @@ namespace UnityEngine.Rendering
             // Clear this type of target on metal devices (output type nor compatible: float4 vs uint)
             int kernel = clearR32_UIntShader.FindKernel("ClearUIntTexture");
 #if OPTIMISATION_SHADERPARAMS
-            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, m_Target, blackUIntTexture2D);
+            cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, k_Target, blackUIntTexture2D);
 #else
             cmd.SetComputeTextureParam(clearR32_UIntShader, kernel, "_Target", blackUIntTexture2D);
 #endif // OPTIMISATION_SHADERPARAMS

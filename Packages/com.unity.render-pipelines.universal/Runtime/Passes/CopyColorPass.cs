@@ -12,7 +12,9 @@ namespace UnityEngine.Rendering.Universal.Internal
     /// </summary>
     public class CopyColorPass : ScriptableRenderPass
     {
-        private static readonly int m_CameraOpaqueTexture = Shader.PropertyToID("_CameraOpaqueTexture");
+#if OPTIMISATION_SHADERPARAMS
+        private static readonly int k_CameraOpaqueTexture = Shader.PropertyToID("_CameraOpaqueTexture");
+#endif // OPTIMISATION_SHADERPARAMS
         int m_SampleOffsetShaderHandle;
         Material m_SamplingMaterial;
         Downsampling m_DownsamplingMethod;
@@ -259,7 +261,11 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 builder.SetRenderFunc((PassData data, RenderGraphContext context) =>
                 {
-                    data.cmd.SetGlobalTexture(m_CameraOpaqueTexture, data.destination);
+#if OPTIMISATION_SHADERPARAMS
+                    data.cmd.SetGlobalTexture(k_CameraOpaqueTexture, data.destination);
+#else
+                    data.cmd.SetGlobalTexture("_CameraOpaqueTexture", data.destination);
+#endif // OPTIMISATION_SHADERPARAMS
                 });
             }
 

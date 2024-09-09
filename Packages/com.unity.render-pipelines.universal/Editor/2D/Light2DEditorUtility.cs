@@ -16,7 +16,11 @@ namespace UnityEditor.Rendering.Universal
             {
                 case (EventType.Layout):
                 {
+#if OPTIMISATION
                     Vector2 size2 = 0.5f * size * Vector2.one;
+#else
+                    Vector2 size2 = Vector2.one * size * 0.5f;
+#endif // OPTIMISATION
                     if (isAngleHandle)
                         size2.x = 0.0f;
 
@@ -32,7 +36,11 @@ namespace UnityEditor.Rendering.Universal
                     float w = texture.width;
                     float h = texture.height;
                     float max = Mathf.Max(w, h);
+#if OPTIMISATION
                     Vector3 scale = 0.5f * size * new Vector2(w / max, h / max);
+#else
+                    Vector3 scale = new Vector2(w / max, h / max) * size * 0.5f;
+#endif // OPTIMISATION
 
                     if (Camera.current == null)
                         scale.y *= -1f;

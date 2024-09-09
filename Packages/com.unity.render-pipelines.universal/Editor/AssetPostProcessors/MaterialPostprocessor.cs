@@ -15,11 +15,13 @@ namespace UnityEditor.Rendering.Universal
 {
     class MaterialModificationProcessor : AssetModificationProcessor
     {
-        const string k_MaterialExtension = ".mat";
-        
         static void OnWillCreateAsset(string asset)
         {
-            if (!asset.EndsWith(k_MaterialExtension, StringComparison.InvariantCultureIgnoreCase))
+#if OPTIMISATION
+            if (!asset.EndsWith(".mat", StringComparison.InvariantCultureIgnoreCase))
+#else
+            if (!asset.ToLowerInvariant().EndsWith(".mat"))
+#endif // OPTIMISATION
             {
                 return;
             }

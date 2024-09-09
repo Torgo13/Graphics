@@ -39,11 +39,11 @@ namespace UnityEngine.Rendering.Universal.Internal
         private static readonly ProfilingSampler m_ProfilingSamplerFPComplete = new ProfilingSampler("Forward+ Complete");
         private static readonly ProfilingSampler m_ProfilingSamplerFPUpload = new ProfilingSampler("Forward+ Upload");
 #if OPTIMISATION_SHADERPARAMS
-        private static readonly int m_URPZBinBuffer = Shader.PropertyToID("URP_ZBinBuffer");
-        private static readonly int m_URPTileBuffer = Shader.PropertyToID("urp_TileBuffer");
-        private static readonly int m_FPParams0 = Shader.PropertyToID("_FPParams0");
-        private static readonly int m_FPParams1 = Shader.PropertyToID("_FPParams1");
-        private static readonly int m_FPParams2 = Shader.PropertyToID("_FPParams2");
+        private static readonly int k_URP_ZBinBuffer = Shader.PropertyToID("URP_ZBinBuffer");
+        private static readonly int k_urp_TileBuffer = Shader.PropertyToID("urp_TileBuffer");
+        private static readonly int k_FPParams0 = Shader.PropertyToID("_FPParams0");
+        private static readonly int k_FPParams1 = Shader.PropertyToID("_FPParams1");
+        private static readonly int k_FPParams2 = Shader.PropertyToID("_FPParams2");
 #endif // OPTIMISATION_SHADERPARAMS
         MixedLightingSetup m_MixedLightingSetup;
 
@@ -388,8 +388,8 @@ namespace UnityEngine.Rendering.Universal.Internal
                         m_ZBinsBuffer.SetData(m_ZBins.Reinterpret<float4>(UnsafeUtility.SizeOf<uint>()));
                         m_TileMasksBuffer.SetData(m_TileMasks.Reinterpret<float4>(UnsafeUtility.SizeOf<uint>()));
 #if OPTIMISATION_SHADERPARAMS
-                        cmd.SetGlobalConstantBuffer(m_ZBinsBuffer, m_URPZBinBuffer, 0, UniversalRenderPipeline.maxZBinWords * 4);
-                        cmd.SetGlobalConstantBuffer(m_TileMasksBuffer, m_URPTileBuffer, 0, UniversalRenderPipeline.maxTileWords * 4);
+                        cmd.SetGlobalConstantBuffer(m_ZBinsBuffer, k_URP_ZBinBuffer, 0, UniversalRenderPipeline.maxZBinWords * 4);
+                        cmd.SetGlobalConstantBuffer(m_TileMasksBuffer, k_urp_TileBuffer, 0, UniversalRenderPipeline.maxTileWords * 4);
 #else
                         cmd.SetGlobalConstantBuffer(m_ZBinsBuffer, "URP_ZBinBuffer", 0, UniversalRenderPipeline.maxZBinWords * 4);
                         cmd.SetGlobalConstantBuffer(m_TileMasksBuffer, "urp_TileBuffer", 0, UniversalRenderPipeline.maxTileWords * 4);
@@ -397,9 +397,9 @@ namespace UnityEngine.Rendering.Universal.Internal
                     }
 
 #if OPTIMISATION_SHADERPARAMS
-                    cmd.SetGlobalVector(m_FPParams0, math.float4(m_ZBinScale, m_ZBinOffset, m_LightCount, m_DirectionalLightCount));
-                    cmd.SetGlobalVector(m_FPParams1, math.float4(renderingData.cameraData.pixelRect.size / m_ActualTileWidth, m_TileResolution.x, m_WordsPerTile));
-                    cmd.SetGlobalVector(m_FPParams2, math.float4(m_BinCount, m_TileResolution.x * m_TileResolution.y, 0, 0));
+                    cmd.SetGlobalVector(k_FPParams0, math.float4(m_ZBinScale, m_ZBinOffset, m_LightCount, m_DirectionalLightCount));
+                    cmd.SetGlobalVector(k_FPParams1, math.float4(renderingData.cameraData.pixelRect.size / m_ActualTileWidth, m_TileResolution.x, m_WordsPerTile));
+                    cmd.SetGlobalVector(k_FPParams2, math.float4(m_BinCount, m_TileResolution.x * m_TileResolution.y, 0, 0));
 #else
                     cmd.SetGlobalVector("_FPParams0", math.float4(m_ZBinScale, m_ZBinOffset, m_LightCount, m_DirectionalLightCount));
                     cmd.SetGlobalVector("_FPParams1", math.float4(renderingData.cameraData.pixelRect.size / m_ActualTileWidth, m_TileResolution.x, m_WordsPerTile));
