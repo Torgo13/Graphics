@@ -181,11 +181,19 @@ namespace UnityEngine.Rendering.Universal
 
             // Constants
             private const int k_FinalTexID = 3;
+#if OPTIMISATION_SHADERPARAMS
+            private static readonly int k_SSAOTextureName = Shader.PropertyToID("_ScreenSpaceOcclusionTexture");
+#else
             private const string k_SSAOTextureName = "_ScreenSpaceOcclusionTexture";
             private const string k_AmbientOcclusionParamName = "_AmbientOcclusionParam";
+#endif // OPTIMISATION_SHADERPARAMS
 
             // Statics
+#if OPTIMISATION_SHADERPARAMS
+            internal static readonly int s_AmbientOcclusionParamID = Shader.PropertyToID("_AmbientOcclusionParam");
+#else
             internal static readonly int s_AmbientOcclusionParamID = Shader.PropertyToID(k_AmbientOcclusionParamName);
+#endif // OPTIMISATION_SHADERPARAMS
             private static readonly int s_SSAOParamsID = Shader.PropertyToID("_SSAOParams");
             private static readonly int s_SSAOBlueNoiseParamsID = Shader.PropertyToID("_SSAOBlueNoiseParams");
             private static readonly int s_LastKawasePass = Shader.PropertyToID("_LastKawasePass");
@@ -577,7 +585,11 @@ namespace UnityEngine.Rendering.Universal
             public override void OnCameraCleanup(CommandBuffer cmd)
             {
                 if (cmd == null)
+#if SAFETY
+                    throw new ArgumentNullException(nameof(cmd));
+#else
                     throw new ArgumentNullException("cmd");
+#endif // SAFETY
 
                 if (!m_CurrentSettings.AfterOpaque)
                     CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.ScreenSpaceOcclusion, false);

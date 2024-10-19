@@ -714,7 +714,7 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-        // Hide: User aren't suppose to have to create it.
+        // Hide: User aren't supposed to have to create it.
         //[MenuItem("Assets/Create/Rendering/URP Editor Resources", priority = CoreUtils.Sections.section8 + CoreUtils.Priorities.assetsCreateRenderingMenuPriority)]
         static void CreateUniversalPipelineEditorResources()
         {
@@ -773,7 +773,7 @@ namespace UnityEngine.Rendering.Universal
             {
                 // If previous version and current version are miss-matched then we are waiting for the upgrader to kick in
                 if (k_AssetPreviousVersion != k_AssetVersion)
-                    return null;                
+                    return null;
 
                 if (m_RendererDataList[m_DefaultRendererIndex].GetType().ToString()
                     .Contains("Universal.ForwardRendererData"))
@@ -1537,7 +1537,7 @@ namespace UnityEngine.Rendering.Universal
             set { m_UseFastSRGBLinearConversion = value; }
 #endif // CUSTOM_URP
         }
-        
+
         /// <summary>
         /// Returns true if Data Driven Lens Flare are supported by this asset, false otherwise.
         /// </summary>

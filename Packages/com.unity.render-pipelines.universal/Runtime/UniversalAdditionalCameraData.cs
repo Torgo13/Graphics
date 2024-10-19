@@ -123,12 +123,13 @@ namespace UnityEngine.Rendering.Universal
         /// <summary>
         /// Use this to select the high <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
         /// </summary>
-        High//,
+        High
+        /*,
 
         /// <summary>
         /// Use this to select the ultra <c>SubpixelMorphologicalAntiAliasing</c> SMAA quality
         /// </summary>
-        //Ultra
+        Ultra*/
     }
 
     /// <summary>
@@ -754,7 +755,7 @@ namespace UnityEngine.Rendering.Universal
             get => m_ScreenCoordScaleBias;
             set => m_ScreenCoordScaleBias = value;
         }
-        
+
         /// <summary>
         /// Returns true if this camera allows outputting to HDR displays.
         /// </summary>

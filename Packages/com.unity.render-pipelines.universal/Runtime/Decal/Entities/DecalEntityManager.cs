@@ -183,6 +183,11 @@ namespace UnityEngine.Rendering.Universal
         private DecalEntityIndexer m_DecalEntityIndexer = new DecalEntityIndexer();
         private Dictionary<Material, int> m_MaterialToChunkIndex = new Dictionary<Material, int>();
 
+#if OPTIMISATION_SHADERPARAMS
+        private static readonly int kNormalToWorld = Shader.PropertyToID("_NormalToWorld");
+        private static readonly int kDecalLayerMaskFromDecal = Shader.PropertyToID("_DecalLayerMaskFromDecal");
+#endif // OPTIMISATION_SHADERPARAMS
+
         private struct CombinedChunks
         {
             public DecalEntityChunk entityChunk;
@@ -285,8 +290,13 @@ namespace UnityEngine.Rendering.Universal
 
                 // In order instanced and non instanced rendering to work with _NormalToWorld and _DecalLayerMaskFromDecal
                 // We need to make sure the array are created with maximum size
+#if OPTIMISATION_SHADERPARAMS
+                propertyBlock.SetMatrixArray(kNormalToWorld, new Matrix4x4[DecalDrawSystem.MaxBatchSize]);
+                propertyBlock.SetFloatArray(kDecalLayerMaskFromDecal, new float[DecalDrawSystem.MaxBatchSize]);
+#else
                 propertyBlock.SetMatrixArray("_NormalToWorld", new Matrix4x4[DecalDrawSystem.MaxBatchSize]);
                 propertyBlock.SetFloatArray("_DecalLayerMaskFromDecal", new float[DecalDrawSystem.MaxBatchSize]);
+#endif // OPTIMISATION_SHADERPARAMS
 
                 entityChunks.Add(new DecalEntityChunk() { material = material });
                 cachedChunks.Add(new DecalCachedChunk()
@@ -483,8 +493,12 @@ namespace UnityEngine.Rendering.Universal
                     cachedChunks[i] = combinedChunk.cachedChunk;
                     culledChunks[i] = combinedChunk.culledChunk;
                     drawCallChunks[i] = combinedChunk.drawCallChunk;
+#if OPTIMISATION
+                    m_MaterialToChunkIndex.TryAdd(entityChunks[i].material, i);
+#else
                     if (!m_MaterialToChunkIndex.ContainsKey(entityChunks[i].material))
                         m_MaterialToChunkIndex.Add(entityChunks[i].material, i);
+#endif // OPTIMISATION
                     m_CombinedChunkRemmap[combinedChunk.previousChunkIndex] = i;
                     count++;
                 }

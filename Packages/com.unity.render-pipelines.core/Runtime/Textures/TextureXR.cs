@@ -119,6 +119,7 @@ namespace UnityEngine.Rendering
         static Texture2DArray m_WhiteTexture2DArray;
         static RTHandle m_WhiteTexture2DArrayRTH;
         static RTHandle m_WhiteTextureRTH;
+
 #if OPTIMISATION_SHADERPARAMS
         static readonly int k_TargetArray = Shader.PropertyToID("_TargetArray");
         static readonly int k_Target = Shader.PropertyToID("_Target");

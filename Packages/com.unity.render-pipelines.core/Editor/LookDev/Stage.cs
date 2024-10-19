@@ -48,7 +48,11 @@ namespace UnityEditor.Rendering.LookDev
         public Stage(string sceneName)
         {
             if (string.IsNullOrEmpty(sceneName))
+#if BUGFIX
+                throw new System.ArgumentNullException(nameof(sceneName));
+#else
                 throw new System.ArgumentNullException("sceneName");
+#endif // BUGFIX
 
             m_PreviewScene = EditorSceneManager.NewPreviewScene();
             m_PreviewScene.name = sceneName;

@@ -94,7 +94,7 @@ namespace UnityEngine.Rendering
         /// Update the capture location for the probe request.
         /// </summary>
         /// <param name ="probeInstanceID"> The instance ID of the probe doing the request and that wants the capture position updated.</param>
-        /// <param name ="newPositionnewPosition"> The position at which a probe is baked.</param>
+        /// <param name ="newPosition"> The position at which a probe is baked.</param>
         public void UpdatePositionForRequest(int probeInstanceID, Vector3 newPosition)
         {
             if (m_SHCoefficients.ContainsKey(probeInstanceID))

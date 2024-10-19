@@ -1,5 +1,3 @@
-#define OPTIMISATION
-
 using System;
 using Unity.Collections;
 using System.Collections.Generic;
@@ -488,11 +486,11 @@ namespace UnityEngine.Rendering.Universal
                     tmp.Add(camera);
                     if (standardRequest != null)
                     {
-#if OPTIMISATION
+#if OPTIMISATION_LISTPOOL
                         Render(context, tmp);
 #else
                         Render(context, tmp.ToArray());
-#endif // OPTIMISATION
+#endif // OPTIMISATION_LISTPOOL
                     }
                     else
                     {
@@ -524,7 +522,7 @@ namespace UnityEngine.Rendering.Universal
                         }
                     }
                 }
-                
+
 
                 if(temporaryRT)
                 {
@@ -730,7 +728,7 @@ namespace UnityEngine.Rendering.Universal
         /// The last camera resolves the final target to screen.
         /// </summary>
         /// <param name="context">Render context used to record commands during execution.</param>
-        /// <param name="camera">Camera to render.</param>
+        /// <param name="baseCamera">Camera to render.</param>
         static void RenderCameraStack(ScriptableRenderContext context, Camera baseCamera)
         {
             using var profScope = new ProfilingScope(null, ProfilingSampler.Get(URPProfileId.RenderCameraStack));
@@ -914,7 +912,7 @@ namespace UnityEngine.Rendering.Universal
                             CameraData overlayCameraData = baseCameraData;
                             overlayCameraData.camera = currCamera;
                             overlayCameraData.baseCamera = baseCamera;
-                            
+
                             UpdateCameraStereoMatrices(currAdditionalCameraData.camera, xrPass);
 
                             using (new ProfilingScope(null, Profiling.Pipeline.beginCameraRendering))
@@ -929,7 +927,7 @@ namespace UnityEngine.Rendering.Universal
 
                             bool lastCamera = i == lastActiveOverlayCameraIndex;
                             InitializeAdditionalCameraData(currCamera, currAdditionalCameraData, lastCamera, ref overlayCameraData);
-                            
+
                             overlayCameraData.stackAnyPostProcessingEnabled = anyPostProcessingEnabled;
                             overlayCameraData.stackLastCameraOutputToHDR = finalOutputHDR;
 

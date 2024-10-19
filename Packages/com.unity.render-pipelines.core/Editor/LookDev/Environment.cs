@@ -371,7 +371,12 @@ namespace UnityEditor.Rendering.LookDev
             skyCubemapField.RegisterValueChangedCallback(evt =>
             {
                 var tmp = environment.cubemap;
+#if BUGFIX
+                Cubemap tmp0 = tmp;
+                RegisterChange(ref tmp, evt.newValue as Cubemap, updatePreview: true, customResync: () => environment.cubemap = tmp0);
+#else
                 RegisterChange(ref tmp, evt.newValue as Cubemap, updatePreview: true, customResync: () => environment.cubemap = tmp);
+#endif // BUGFIX
             });
             foldout.Add(skyCubemapField);
 

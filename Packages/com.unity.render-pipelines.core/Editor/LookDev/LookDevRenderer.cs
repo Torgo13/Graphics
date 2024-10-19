@@ -110,7 +110,7 @@ namespace UnityEditor.Rendering.LookDev
         /// <summary>
         /// Capture image of the scene.
         /// </summary>
-        /// <param name="data">Datas required to compute the capture</param>
+        /// <param name="data">Data required to compute the capture
         /// [Optional] When drawing several time the scene, you can remove First and/or Last to not initialize objects.
         /// Be careful though to always start your frame with a First and always end with a Last.
         /// </param>

@@ -190,6 +190,8 @@ namespace UnityEngine.Rendering
                 cmd.DrawMesh(s_TriangleMesh, Matrix4x4.identity, material, 0, shaderPass, s_PropertyBlock);
             else
                 cmd.DrawProcedural(Matrix4x4.identity, material, shaderPass, MeshTopology.Triangles, 3, 1, s_PropertyBlock);
+
+            s_PropertyBlock.Clear();
         }
 
         static internal void DrawQuad(CommandBuffer cmd, Material material, int shaderPass)
@@ -198,6 +200,8 @@ namespace UnityEngine.Rendering
                 cmd.DrawMesh(s_QuadMesh, Matrix4x4.identity, material, 0, shaderPass, s_PropertyBlock);
             else
                 cmd.DrawProcedural(Matrix4x4.identity, material, shaderPass, MeshTopology.Quads, 4, 1, s_PropertyBlock);
+
+            s_PropertyBlock.Clear();
         }
 
         /// <summary>

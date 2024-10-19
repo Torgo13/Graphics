@@ -119,7 +119,7 @@ Shader "Hidden/Universal Render Pipeline/FinalPost"
             color = GetLinearToSRGB(color);
             #endif
             #elif _SGSR
-            half4 OutColor = half4(0, 0, 0, 1);
+            half4 OutColor = half4(0.0, 0.0, 0.0, 1.0);
             // ViewportInfo should be a float4 containing {1.0/low_res_tex_width, 1.0/low_res_tex_height, low_res_tex_width, low_res_tex_height}.
             // The `xy` components will be used to shift UVs to read adjacent texels.
             // The `zw` components will be used to map from UV space [0, 1][0, 1] to image space [0, w][0, h].

@@ -197,7 +197,11 @@ namespace UnityEngine.Rendering.Universal
 #if ENABLE_BURST_1_0_0_OR_NEWER
         [Unity.Burst.BurstCompile]
 #endif
+#if SAFETY
+        public struct UpdateTransformsJob : IJobParallelForTransform
+#else
         public unsafe struct UpdateTransformsJob : IJobParallelForTransform
+#endif // SAFETY
         {
             private static readonly quaternion k_MinusYtoZRotation = quaternion.EulerXYZ(-math.PI / 2.0f, 0, 0);
 

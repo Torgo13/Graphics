@@ -886,15 +886,13 @@ namespace UnityEngine.Rendering
         static string GetTextureAutoName(int width, int height, string format, TextureDimension dim = TextureDimension.None, string name = "", bool mips = false, int depth = 0)
         {
             string temp;
+
             if (depth == 0)
                 temp = string.Format("{0}x{1}{2}_{3}", width, height, mips ? "_Mips" : "", format);
             else
                 temp = string.Format("{0}x{1}x{2}{3}_{4}", width, height, depth, mips ? "_Mips" : "", format);
-#if OPTIMISATION
-            temp = String.Format("{0}_{1}_{2}", name.Length == 0 ? "Texture" : name, (dim == TextureDimension.None) ? "" : dim.ToString(), temp);
-#else
+
             temp = String.Format("{0}_{1}_{2}", name == "" ? "Texture" : name, (dim == TextureDimension.None) ? "" : dim.ToString(), temp);
-#endif // OPTIMISATION
 
             return temp;
         }
@@ -1172,7 +1170,11 @@ namespace UnityEngine.Rendering
                     .SelectMany(t =>
                     {
                         // Ugly hack to handle mis-versioned dlls
+#if OPTIMISATION
+                        var innerTypes = Type.EmptyTypes;
+#else
                         var innerTypes = new Type[0];
+#endif // OPTIMISATION
                         try
                         {
                             innerTypes = t.GetTypes();

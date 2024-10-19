@@ -1160,7 +1160,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Initialize the reference volume.
         /// </summary>
-        /// <param name ="allocationSize"> Size used for the chunk allocator that handles bricks.</param>
+        /// <param name ="blendingMemoryBudget">Size used for the chunk allocator that handles bricks.</param>
         /// <param name ="memoryBudget">Probe reference volume memory budget.</param>
         /// <param name ="shBands">Probe reference volume SH bands.</param>
         void InitProbeReferenceVolume(ProbeVolumeTextureMemoryBudget memoryBudget, ProbeVolumeBlendingTextureMemoryBudget blendingMemoryBudget, ProbeVolumeSHBands shBands)

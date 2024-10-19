@@ -107,7 +107,7 @@ namespace UnityEngine.Rendering
             float startValue = keys[0].value;
             float endValue = keys[keys.Length - 1].value;
 
-            // In practice, we are lerping animcurves for post processing curves that are always clamping at the begining and the end,
+            // In practice, we are lerping animcurves for post processing curves that are always clamping at the beginning and the end,
             // so we are not implementing the other wrap modes like Loop, PingPong, etc.
             Keyframe ret;
             if (index < 0)

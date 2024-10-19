@@ -175,6 +175,7 @@ namespace UnityEngine.Rendering.Universal
         {
             var mesh = m_EntityManager.decalProjectorMesh;
             var material = GetMaterial(decalEntityChunk);
+
             decalCachedChunk.propertyBlock.SetVector("unity_LightData", new Vector4(1, 1, 1, 0)); // GetMainLight requires z component to be set
 
             int subCallCount = decalDrawCallChunk.subCallCount;

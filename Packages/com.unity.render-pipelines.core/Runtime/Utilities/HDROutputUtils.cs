@@ -185,7 +185,6 @@ namespace UnityEngine.Rendering
         /// Configures the Material keywords to use HDR output parameters.
         /// </summary>
         /// <param name="material">The Material used with HDR output.</param>
-        /// <param name="gamut">Color gamut (a combination of color space and encoding) queried from the device.</param>
         /// <param name="operations">HDR color operations the shader applies.</param>
         public static void ConfigureHDROutput(Material material, Operation operations)
         {
@@ -230,7 +229,7 @@ namespace UnityEngine.Rendering
         public static bool IsShaderVariantValid(ShaderKeywordSet shaderKeywordSet, bool isHDREnabled)
         {
             bool hasHDRKeywords = shaderKeywordSet.IsEnabled(ShaderKeywords.HDREncoding) || shaderKeywordSet.IsEnabled(ShaderKeywords.HDRColorSpaceConversion) || shaderKeywordSet.IsEnabled(ShaderKeywords.HDRColorSpaceConversionAndEncoding) || shaderKeywordSet.IsEnabled(ShaderKeywords.HDRInput);
-            
+
             // If we don't plan to enable HDR, remove all HDR Output variants
             if (!isHDREnabled && hasHDRKeywords)
                 return false;

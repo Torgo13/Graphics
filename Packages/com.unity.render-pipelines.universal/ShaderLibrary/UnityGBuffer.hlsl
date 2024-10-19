@@ -231,7 +231,7 @@ BRDFData BRDFDataFromGbuffer(half4 gbuffer0, half4 gbuffer1, half4 gbuffer2)
     half smoothness = gbuffer2.a;
 
     BRDFData brdfData = (BRDFData)0;
-    half alpha = half(1.0); // NOTE: alpha can get modfied, forward writes it out (_ALPHAPREMULTIPLY_ON).
+    half alpha = half(1.0); // NOTE: alpha can get modified, forward writes it out (_ALPHAPREMULTIPLY_ON).
 
     half3 brdfDiffuse;
     half3 brdfSpecular;

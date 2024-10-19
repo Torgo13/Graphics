@@ -8,8 +8,14 @@ namespace UnityEngine.Rendering.Universal
     sealed class MotionVectorRenderPass : ScriptableRenderPass
     {
         #region Fields
+#if OPTIMISATION_SHADERPARAMS
+        static readonly int kPreviousViewProjectionNoJitter = Shader.PropertyToID("_PrevViewProjMatrix");
+        static readonly int kViewProjectionNoJitter = Shader.PropertyToID("_NonJitteredViewProjMatrix");
+        static readonly int kMotionVectorTexture = Shader.PropertyToID("_MotionVectorTexture");
+#else
         const string kPreviousViewProjectionNoJitter = "_PrevViewProjMatrix";
         const string kViewProjectionNoJitter = "_NonJitteredViewProjMatrix";
+#endif // OPTIMISATION_SHADERPARAMS
 #if ENABLE_VR && ENABLE_XR_MODULE
         const string kPreviousViewProjectionNoJitterStereo = "_PrevViewProjMatrixStereo";
         const string kViewProjectionNoJitterStereo = "_NonJitteredViewProjMatrixStereo";
@@ -17,9 +23,6 @@ namespace UnityEngine.Rendering.Universal
         internal const GraphicsFormat k_TargetFormat = GraphicsFormat.R16G16_SFloat;
 
         static readonly string[] s_ShaderTags = new string[] { "MotionVectors" };
-#if OPTIMISATION_SHADERPARAMS
-        static readonly int k_MotionVectorTexture = Shader.PropertyToID("_MotionVectorTexture");
-#endif // OPTIMISATION_SHADERPARAMS
 
         RTHandle m_Color;
         RTHandle m_Depth;
@@ -241,7 +244,7 @@ namespace UnityEngine.Rendering.Universal
                 {
                     ExecutePass(context.renderContext, data, ref data.renderingData);
 #if OPTIMISATION_SHADERPARAMS
-                    data.renderingData.commandBuffer.SetGlobalTexture(k_MotionVectorTexture, data.motionVectorColor);
+                    data.renderingData.commandBuffer.SetGlobalTexture(kMotionVectorTexture, data.motionVectorColor);
 #else
                     data.renderingData.commandBuffer.SetGlobalTexture("_MotionVectorTexture", data.motionVectorColor);
 #endif // OPTIMISATION_SHADERPARAMS

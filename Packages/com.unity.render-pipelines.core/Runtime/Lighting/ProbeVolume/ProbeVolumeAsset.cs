@@ -168,7 +168,7 @@ namespace UnityEngine.Rendering
             // L0L1 Data
             var cellData = cellDataAsset.GetData<byte>();
 
-            /// 3 4 component textures, 1 half and 2 bytes. Aligned on the size of a chunk.
+            // 3 4 component textures, 1 half and 2 bytes. Aligned on the size of a chunk.
             var offset = 0;
             var shL0L1RxData = GetSubArray<ushort>(cellData, totalProbeCount * 4, ref offset);
             var shL1GL1RyData = GetSubArray<byte>(cellData, totalProbeCount * 4, ref offset);

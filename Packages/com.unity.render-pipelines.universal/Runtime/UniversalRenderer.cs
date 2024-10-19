@@ -39,7 +39,7 @@ namespace UnityEngine.Rendering.Universal
     /// </summary>
     public sealed partial class UniversalRenderer : ScriptableRenderer
     {
-        #if UNITY_SWITCH || UNITY_ANDROID
+        #if (UNITY_SWITCH || UNITY_ANDROID) && !UNITY_EDITOR
         const GraphicsFormat k_DepthStencilFormat = GraphicsFormat.D24_UNorm_S8_UInt;
         const int k_DepthBufferBits = 24;
         #else
@@ -57,7 +57,7 @@ namespace UnityEngine.Rendering.Universal
         static readonly int k_CameraRenderingLayersTexture = Shader.PropertyToID("_CameraRenderingLayersTexture");
         static readonly int k_CameraNormalsTexture = Shader.PropertyToID("_CameraNormalsTexture");
         static readonly int k_CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
-#endif // OPTIMISATION
+#endif // OPTIMISATION_SHADERPARAMS
 
         private static class Profiling
         {
@@ -492,6 +492,20 @@ namespace UnityEngine.Rendering.Universal
 
         bool IsDepthPrimingEnabled(ref CameraData cameraData)
         {
+#if UNITY_EDITOR
+            // We need to disable depth-priming for DrawCameraMode.Wireframe, since depth-priming forces ZTest to Equal
+            // for opaques rendering, which breaks wireframe rendering.
+            if (cameraData.isSceneViewCamera)
+            {
+                foreach (var sceneViewObject in UnityEditor.SceneView.sceneViews)
+                {
+                    var sceneView = sceneViewObject as UnityEditor.SceneView;
+                    if (sceneView != null && sceneView.camera == cameraData.camera && sceneView.cameraMode.drawMode == UnityEditor.DrawCameraMode.Wireframe)
+                        return false;
+                }
+            }
+#endif
+
             // depth priming requires an extra depth copy, disable it on platforms not supporting it (like GLES when MSAA is on)
             if (!CanCopyDepth(ref cameraData))
                 return false;
@@ -713,7 +727,16 @@ namespace UnityEngine.Rendering.Universal
                     // Do depth copy before the render pass that requires depth texture as shader read resource
                     copyDepthPassEvent = (RenderPassEvent)Mathf.Min((int)RenderPassEvent.AfterRenderingTransparents, ((int)renderPassInputs.requiresDepthTextureEarliestEvent) - 1);
                 }
+
                 m_CopyDepthPass.renderPassEvent = copyDepthPassEvent;
+
+                // In case we are making the copy depth pass earlier, we need to force set these variables to disable
+                // depth resolve as the render pass event itself has been moved earlier and it's not possible anymore
+                if (copyDepthPassEvent < RenderPassEvent.AfterRenderingTransparents)
+                {
+                    m_CopyDepthPass.m_CopyResolvedDepth = false;
+                    m_CopyDepthMode = CopyDepthMode.AfterOpaques;
+                }
             }
             else if (cameraHasPostProcessingWithDepth || isSceneViewOrPreviewCamera || isGizmosEnabled)
             {

@@ -1010,7 +1010,11 @@ namespace UnityEngine.Rendering
 
                 m_BakedCells[cell.index] = cell;
             }
+
+#if OPTIMISATION
+#else
             fetchScope.Dispose();
+#endif // OPTIMISATION
 
             RestorePhysicsComponentsAfterBaking();
             CleanupOccluders();
@@ -1080,7 +1084,10 @@ namespace UnityEngine.Rendering
                 data.ResolveSharedCellData();
             }
 
+#if OPTIMISATION
+#else
             writeScope.Dispose();
+#endif // OPTIMISATION
 
             var probeVolumes = GetProbeVolumeList();
             foreach (var probeVolume in probeVolumes)

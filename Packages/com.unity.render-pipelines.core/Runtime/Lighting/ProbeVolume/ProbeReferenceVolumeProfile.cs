@@ -1,7 +1,7 @@
 namespace UnityEngine.Rendering
 {
     /// <summary>
-    /// An Asset which holds a set of settings to use with a <see cref="Probe Reference Volume"/>.
+    /// An Asset which holds a set of settings to use with a <see cref="ProbeReferenceVolume"/>.
     /// </summary>
     public sealed class ProbeReferenceVolumeProfile : ScriptableObject
     {

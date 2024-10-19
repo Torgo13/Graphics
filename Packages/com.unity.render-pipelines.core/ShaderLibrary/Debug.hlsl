@@ -374,7 +374,7 @@ real3 GetColorCodeFunction(real value, real4 threshold)
     }
     else if (value >= threshold[2] && value < threshold[3])
     {
-        real scale = (value - threshold[2]) / (threshold[2] - threshold[2]);
+        real scale = (value - threshold[2]) / (threshold[3] - threshold[2]);
         outColor = lerp(lightGreen, yellow, scale);
     }
     else

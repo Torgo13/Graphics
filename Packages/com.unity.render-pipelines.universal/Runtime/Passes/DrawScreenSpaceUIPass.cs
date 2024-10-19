@@ -56,7 +56,7 @@ namespace UnityEngine.Rendering.Universal
         /// Get a descriptor for the required depth texture for this pass.
         /// </summary>
         /// <param name="descriptor">Camera target descriptor.</param>
-        /// <param name="depthStencilFormat">Depth stencil format required.</param>
+        /// <param name="depthBufferBits">Depth stencil format required.</param>
         /// <param name="cameraWidth">Unscaled pixel width of the camera.</param>
         /// <param name="cameraHeight">Unscaled pixel height of the camera.</param>
         /// <seealso cref="RenderTextureDescriptor"/>

@@ -86,7 +86,7 @@ VertexToGeometry ConservativeVertex(VertexInput input)
     }
     o.vertex = float4(p.xyz / _VolumeSize, 1);
 
-    // trasnform pos from 0 1 to -1 1
+    // transform pos from 0 1 to -1 1
     o.vertex.xyz = o.vertex.xyz * 2 - 1;
 
     return o;
@@ -185,7 +185,7 @@ TerrainVertexToFragment TerrainVert(uint vertexID : SV_VERTEXID, uint instanceID
     }
     o.vertex = float4(p.xyz / _VolumeSize, 1);
 
-    // trasnform pos between 0 1 to -1 1
+    // transform pos between 0 1 to -1 1
     o.vertex.xyz = o.vertex.xyz * 2 - 1;
 
     return o;
@@ -238,7 +238,7 @@ VertexToFragment MeshVert(VertexInput input)
     }
     o.vertex = float4(p.xyz / _VolumeSize, 1);
 
-    // trasnform pos from 0 1 to -1 1
+    // transform pos from 0 1 to -1 1
     o.vertex.xyz = o.vertex.xyz * 2 - 1;
 
     return o;

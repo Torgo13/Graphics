@@ -308,7 +308,11 @@ namespace UnityEditor.Rendering.Universal
 
                     for (int i = 1; i < hLines; i++)
                     {
+#if OPTIMISATION
+                        var offset = Vector2.right * (i * gridOffset);
+#else
                         var offset = i * Vector2.right * gridOffset;
+#endif // OPTIMISATION
                         offset.x += gridPadding;
                         Handles.DrawLine(innerRect.position + offset, new Vector2(innerRect.x, innerRect.yMax - 1) + offset);
                     }
@@ -319,7 +323,11 @@ namespace UnityEditor.Rendering.Universal
 
                     for (int i = 1; i < vLines; i++)
                     {
+#if OPTIMISATION
+                        var offset = Vector2.up * (i * gridOffset);
+#else
                         var offset = i * Vector2.up * gridOffset;
+#endif // OPTIMISATION
                         offset.y += gridPadding;
                         Handles.DrawLine(innerRect.position + offset, new Vector2(innerRect.xMax - 1, innerRect.y) + offset);
                     }

@@ -156,7 +156,11 @@ namespace UnityEngine.Rendering.Universal.Internal
         {
             if (cmd == null)
             {
+#if SAFETY
+                throw new ArgumentNullException(nameof(cmd));
+#else
                 throw new ArgumentNullException("cmd");
+#endif // SAFETY
             }
             normalHandle = null;
             depthHandle = null;
