@@ -10,6 +10,7 @@ namespace UnityEditor.Rendering.Universal
 
         static bool RejectDrawMode(SceneView.CameraMode cameraMode)
         {
+#if OPTIMISATION
             return cameraMode.drawMode != DrawCameraMode.ShadowCascades &&
                 cameraMode.drawMode != DrawCameraMode.RenderPaths &&
                 cameraMode.drawMode != DrawCameraMode.AlphaChannel &&
@@ -23,6 +24,25 @@ namespace UnityEditor.Rendering.Universal
                 cameraMode.drawMode != DrawCameraMode.ValidateAlbedo &&
                 cameraMode.drawMode != DrawCameraMode.ValidateMetalSpecular &&
                 cameraMode.drawMode != DrawCameraMode.TextureStreaming;
+#else
+            if (cameraMode.drawMode == DrawCameraMode.ShadowCascades ||
+                cameraMode.drawMode == DrawCameraMode.RenderPaths ||
+                cameraMode.drawMode == DrawCameraMode.AlphaChannel ||
+                cameraMode.drawMode == DrawCameraMode.Overdraw ||
+                cameraMode.drawMode == DrawCameraMode.Mipmaps ||
+                cameraMode.drawMode == DrawCameraMode.SpriteMask ||
+                cameraMode.drawMode == DrawCameraMode.DeferredDiffuse ||
+                cameraMode.drawMode == DrawCameraMode.DeferredSpecular ||
+                cameraMode.drawMode == DrawCameraMode.DeferredSmoothness ||
+                cameraMode.drawMode == DrawCameraMode.DeferredNormal ||
+                cameraMode.drawMode == DrawCameraMode.ValidateAlbedo ||
+                cameraMode.drawMode == DrawCameraMode.ValidateMetalSpecular ||
+                cameraMode.drawMode == DrawCameraMode.TextureStreaming
+            )
+                return false;
+
+            return true;
+#endif // OPTIMISATION
         }
 
         static void UpdateSceneViewStates()

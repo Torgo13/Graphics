@@ -46,7 +46,9 @@ namespace UnityEditor.Rendering.Universal
                 transform.localPosition = Vector3.zero;
                 transform.localRotation = Quaternion.identity;
 #endif // OPTIMISATION
+
                 transform.localScale = Vector3.one;
+
 #if OPTIMISATION
                 go.layer = parentTransform.layer;
 #else

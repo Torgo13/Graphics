@@ -68,11 +68,7 @@ namespace UnityEditor.Rendering.Universal
 
             EditorGUI.PropertyField(rect, element, EditorGUIUtility.TrTextContent($"Layer {index}"), true);
 
-#if OPTIMISATION
-            if (element.stringValue?.Length == 0)
-#else
             if (element.stringValue == "")
-#endif // OPTIMISATION
             {
                 element.stringValue = GetDefaultLayerName(index);
                 serializedObject.ApplyModifiedProperties();

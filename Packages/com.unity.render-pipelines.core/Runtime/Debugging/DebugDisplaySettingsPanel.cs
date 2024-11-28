@@ -64,15 +64,12 @@ namespace UnityEngine.Rendering
         }
 
         protected virtual void Dispose(bool disposing)
-        {
-            Clear();
-        }
 #else
         public void Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
         {
             Clear();
         }
-#endif // OPTIMISATION_IDISPOSABLE
 
         /// <summary>
         /// Default constructor

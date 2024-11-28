@@ -1526,7 +1526,11 @@ namespace UnityEngine.Rendering.Universal
         {
 #pragma warning disable 0618 // Obsolete usage: Using deprecated RenderTargetIdentifiers to ensure backwards compatibility with passes set with RenderTargetIdentifier
             Camera camera = cameraData.camera;
+#if OPTIMISATION // ARM
             ClearFlag cameraClearFlag = renderPass.overrideCameraClear ? ClearFlag.None : GetCameraClearFlag(ref cameraData);
+#else
+            ClearFlag cameraClearFlag = GetCameraClearFlag(ref cameraData);
+#endif // OPTIMISATION
 
             // Invalid configuration - use current attachment setup
             // Note: we only check color buffers. This is only technically correct because for shadowmaps and depth only passes

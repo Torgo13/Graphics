@@ -373,6 +373,7 @@ namespace UnityEngine.Rendering
         static public void SetUpscaleFilter(Camera camera, DynamicResUpscaleFilter filter)
         {
             var cameraID = camera.GetInstanceID();
+
 #if OPTIMISATION
             s_CameraUpscaleFilters[cameraID] = filter;
 #else

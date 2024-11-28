@@ -805,10 +805,7 @@ namespace UnityEngine.Rendering.Universal.UTess
                 ModuleHandle.InsertionSort<UEvent, TessEventCompare>(
                     NativeArrayUnsafeUtility.GetUnsafeBufferPointerWithoutChecks(events), 0, eventCount - 1,
                     new TessEventCompare());
-#if BUGFIX
-#else
                 ;
-#endif //
             }
 
             var hullOp = true;

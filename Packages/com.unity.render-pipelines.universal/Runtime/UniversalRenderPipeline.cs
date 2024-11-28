@@ -486,11 +486,11 @@ namespace UnityEngine.Rendering.Universal
                     tmp.Add(camera);
                     if (standardRequest != null)
                     {
-#if OPTIMISATION_LISTPOOL
+#if OPTIMISATION
                         Render(context, tmp);
 #else
                         Render(context, tmp.ToArray());
-#endif // OPTIMISATION_LISTPOOL
+#endif // OPTIMISATION
                     }
                     else
                     {
@@ -504,11 +504,7 @@ namespace UnityEngine.Rendering.Universal
                             BeginCameraRendering(context, camera);
                         }
 
-#if OPTIMISATION
-                        var additionalCameraData = camera.gameObject.GetComponent<UniversalAdditionalCameraData>();
-#else
                         camera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var additionalCameraData);
-#endif // OPTIMISATION
                         RenderSingleCameraInternal(context, camera, ref additionalCameraData);
 
                         using (new ProfilingScope(null, Profiling.Pipeline.endCameraRendering))

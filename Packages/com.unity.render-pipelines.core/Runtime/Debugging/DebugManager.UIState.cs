@@ -19,11 +19,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// The modes of the UI of the Rendering Debugger
         /// </summary>
-#if OPTIMISATION
-        public enum UIMode
-#else
         public enum UIMode : int
-#endif // OPTIMISATION
         {
             /// <summary>
             /// Editor Window

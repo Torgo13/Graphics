@@ -35,11 +35,7 @@ namespace UnityEngine.Rendering.Universal
         public bool ValidateLUT()
         {
             var asset = UniversalRenderPipeline.asset;
-#if OPTIMISATION
-            if ((object)asset == null || (object)texture.value == null)
-#else
             if (asset == null || texture.value == null)
-#endif // OPTIMISATION
                 return false;
 
             int lutSize = asset.colorGradingLutSize;

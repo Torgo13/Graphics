@@ -795,6 +795,7 @@ half3 linear_to_bt1886(half3 x, half gamma, half Lw, half Lb)
 {
     // Good enough approximation for now, may consider using the exact formula instead
     // TODO: Experiment
+    //return pow(max(x, half(0.0)), half(1.0 / 2.4));
     return pow(max(x, 0.0), 1.0 / 2.4);
 
     // Correct implementation (Reference EOTF specified in Rec. ITU-R BT.1886) :

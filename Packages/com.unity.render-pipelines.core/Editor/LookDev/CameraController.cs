@@ -32,7 +32,7 @@ namespace UnityEditor.Rendering.LookDev
         float m_FlySpeedAccelerated = 0f;
         const float m_FlySpeedMin = .01f;
         const float m_FlySpeedMax = 2f;
-        //[TODO: check if necessary to add hability to deactivate acceleration]
+        //[TODO: check if necessary to add ability to deactivate acceleration]
         const float k_FlyAcceleration = 1.1f;
         bool m_ShiftBoostedFly = false;
         bool m_InFlyMotion;

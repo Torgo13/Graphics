@@ -106,22 +106,9 @@ namespace UnityEditor.Rendering.LookDev
         }
 
         protected virtual void Dispose(bool disposing)
-        {
-            if (m_Disposed)
-                return;
-            m_Disposed = true;
-
-            for (int index = 0; index < k_TextureCacheSize; ++index)
-            {
-                if (m_RTs[index] == null || m_RTs[index].Equals(null))
-                    continue;
-
-                UnityEngine.Object.DestroyImmediate(m_RTs[index]);
-                m_RTs[index] = null;
-            }
-        }
 #else
         public void Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
         {
             if (m_Disposed)
                 return;
@@ -136,7 +123,6 @@ namespace UnityEditor.Rendering.LookDev
                 m_RTs[index] = null;
             }
         }
-#endif // OPTIMISATION_IDISPOSABLE
     }
 
     class Compositer : IDisposable

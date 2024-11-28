@@ -1522,15 +1522,14 @@ namespace UnityEngine.Rendering.Universal
                 {
                     m_ActiveCameraColorAttachment = m_ColorBufferSystem.GetBackBuffer(cmd);
                     ConfigureCameraColorTarget(m_ActiveCameraColorAttachment);
+
 #if OPTIMISATION_SHADERPARAMS
                     cmd.SetGlobalTexture(k_CameraColorTexture, m_ActiveCameraColorAttachment.nameID);
-#else
-                    cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
-#endif // OPTIMISATION_SHADERPARAMS
                     //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
-#if OPTIMISATION_SHADERPARAMS
                     cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ActiveCameraColorAttachment.nameID);
 #else
+                    cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
+                    //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
                     cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ActiveCameraColorAttachment.nameID);
 #endif // OPTIMISATION_SHADERPARAMS
                 }
@@ -1666,15 +1665,14 @@ namespace UnityEngine.Rendering.Universal
                 ConfigureCameraColorTarget(m_ColorBufferSystem.GetBackBuffer(cmd));
 
             m_ActiveCameraColorAttachment = m_ColorBufferSystem.GetBackBuffer(cmd);
+
 #if OPTIMISATION_SHADERPARAMS
             cmd.SetGlobalTexture(k_CameraColorTexture, m_ActiveCameraColorAttachment.nameID);
-#else
-            cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
-#endif // OPTIMISATION_SHADERPARAMS
             //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
-#if OPTIMISATION_SHADERPARAMS
             cmd.SetGlobalTexture(k_AfterPostProcessTexture, m_ActiveCameraColorAttachment.nameID);
 #else
+            cmd.SetGlobalTexture("_CameraColorTexture", m_ActiveCameraColorAttachment.nameID);
+            //Set _AfterPostProcessTexture, users might still rely on this although it is now always the cameratarget due to swapbuffer
             cmd.SetGlobalTexture("_AfterPostProcessTexture", m_ActiveCameraColorAttachment.nameID);
 #endif // OPTIMISATION_SHADERPARAMS
         }

@@ -255,17 +255,9 @@ namespace UnityEditor.Rendering.LookDev
         }
 
         protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (cameraSynced)
-                    EditorApplication.update -= SynchronizeCameraStates;
-
-                disposedValue = true;
-            }
-        }
 #else
         void IDisposable.Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
         {
             if (!disposedValue)
             {
@@ -275,7 +267,6 @@ namespace UnityEditor.Rendering.LookDev
                 disposedValue = true;
             }
         }
-#endif // OPTIMISATION_IDISPOSABLE
 
         internal bool HasLibraryAssetChanged(EnvironmentLibrary environmentLibrary)
         {
@@ -426,16 +417,9 @@ namespace UnityEditor.Rendering.LookDev
                 object[] loaded = AssetDatabase.LoadAllAssetsAtPath(path);
                 for (int i = 0; i < loaded.Length; ++i)
                 {
-#if OPTIMISATION
-#else
                     string garbage;
-#endif // OPTIMISATION
                     long testedLocalIndex;
-#if OPTIMISATION
-                    if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier((UnityEngine.Object)loaded[i], out _, out testedLocalIndex)
-#else
                     if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier((UnityEngine.Object)loaded[i], out garbage, out testedLocalIndex)
-#endif // OPTIMISATION
                         && testedLocalIndex == localIDInFile)
                     {
                         environment = loaded[i] as Environment;

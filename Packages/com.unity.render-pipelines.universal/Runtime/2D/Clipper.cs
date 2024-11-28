@@ -204,10 +204,9 @@ namespace UnityEngine.Rendering.Universal
     //    val3.ToString => "85070591730234615847396907784232501249" (8.5e+37)
     //------------------------------------------------------------------------------
 
-#if OPTIMISATION_IEQUATABLE
-    internal struct Int128 : IEquatable<Int128>
-#else
     internal struct Int128
+#if OPTIMISATION_IEQUATABLE
+        : IEquatable<Int128>
 #endif // OPTIMISATION_IEQUATABLE
     {
         private Int64 hi;
@@ -263,8 +262,8 @@ namespace UnityEngine.Rendering.Universal
         public override bool Equals(System.Object obj)
         {
 #if OPTIMISATION_IEQUATABLE
-            if (obj is Int128 other)
-                return this == other;
+            if (obj is Int128 i128)
+                return this == i128;
             return false;
 #else
             if (obj == null || !(obj is Int128))
@@ -276,11 +275,7 @@ namespace UnityEngine.Rendering.Universal
 
         public override int GetHashCode()
         {
-#if OPTIMISATION_IEQUATABLE
-            return System.HashCode.Combine(hi, lo);
-#else
             return hi.GetHashCode() ^ lo.GetHashCode();
-#endif // OPTIMISATION_IEQUATABLE
         }
 
         public static bool operator >(Int128 val1, Int128 val2)
@@ -367,10 +362,9 @@ namespace UnityEngine.Rendering.Universal
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
 
-#if OPTIMISATION_IEQUATABLE
-    internal struct IntPoint : IEquatable<IntPoint>
-#else
     internal struct IntPoint
+#if OPTIMISATION_IEQUATABLE
+        : IEquatable<IntPoint>
 #endif // OPTIMISATION_IEQUATABLE
     {
         public ClipInt N;
@@ -419,8 +413,8 @@ namespace UnityEngine.Rendering.Universal
 
         public override bool Equals(object obj)
         {
-            if (obj is IntPoint other)
-                return this == other;
+            if (obj is IntPoint a)
+                return this == a;
             return false;
         }
 #else
@@ -438,10 +432,10 @@ namespace UnityEngine.Rendering.Universal
 
         public override int GetHashCode()
         {
-            //simply prevents a compiler warning
 #if OPTIMISATION_IEQUATABLE
             return HashCode.Combine(N, X, Y, D, NX, NY);
 #else
+            //simply prevents a compiler warning
             return base.GetHashCode();
 #endif // OPTIMISATION_IEQUATABLE
         }

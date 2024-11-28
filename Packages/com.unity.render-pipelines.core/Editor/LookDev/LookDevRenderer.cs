@@ -32,6 +32,9 @@ namespace UnityEditor.Rendering.LookDev
         }
 
         protected virtual void Dispose(bool disposing)
+#else
+        public void Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
         {
             if (disposed)
                 return;
@@ -39,25 +42,17 @@ namespace UnityEditor.Rendering.LookDev
 
             stage = null;
             updater = null;
+#if SAFETY
             if (output != null)
             {
                 output.Release();
                 output = null;
             }
-        }
 #else
-        public void Dispose()
-        {
-            if (disposed)
-                return;
-            disposed = true;
-
-            stage = null;
-            updater = null;
             output?.Release();
             output = null;
+#endif // SAFETY
         }
-#endif // OPTIMISATION_IDISPOSABLE
     }
 
     /// <summary>Basic renderer to draw scene in texture</summary>

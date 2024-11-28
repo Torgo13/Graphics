@@ -103,7 +103,7 @@ namespace UnityEngine.Rendering
 
                 if (m_CurrentCamera != null)
                 {
-                    // If we witch back to the original camera, put back the transform in it.
+                    // If we switch back to the original camera, put back the transform in it.
                     if (m_CurrentCamera == m_OriginalCamera)
                     {
 #if OPTIMISATION

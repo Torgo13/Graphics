@@ -1597,8 +1597,8 @@ namespace UnityEngine.Rendering
 #if SAFETY
 #else
             unsafe
-            {
 #endif // SAFETY
+            {
                 using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
                 {
                     WriteNativeArray(fs, probesL0L1Rx);
@@ -1629,10 +1629,7 @@ namespace UnityEngine.Rendering
                     WriteNativeArray(fs, validity);
                     WriteNativeArray(fs, offsets);
                 }
-#if SAFETY
-#else
             }
-#endif // SAFETY
 
             AssetDatabase.ImportAsset(cellDataFilename);
 
@@ -1656,7 +1653,7 @@ namespace UnityEngine.Rendering
         }
 
 #if SAFETY
-         static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
+        static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
 #else
         unsafe static void WriteDilatedCells(ProbeVolumePerSceneData data, List<Cell> cells)
 #endif // SAFETY
@@ -1727,8 +1724,8 @@ namespace UnityEngine.Rendering
 #if SAFETY
 #else
             unsafe
-            {
 #endif // SAFETY
+            {
                 using (var fs = new System.IO.FileStream(cellDataFilename, System.IO.FileMode.Create, System.IO.FileAccess.Write))
                 {
                     WriteNativeArray(fs, probesL0L1Rx);
@@ -1746,10 +1743,7 @@ namespace UnityEngine.Rendering
                         WriteNativeArray(fs, probesL2_3);
                     }
                 }
-#if SAFETY
-#else
             }
-#endif // SAFETY
         }
 
         private static void DeduplicateProbePositions(in Vector3[] probePositions, in int[] brickSubdivLevel, Dictionary<int, int> positionToIndex, BakingBatch batch,

@@ -292,13 +292,9 @@ namespace UnityEngine.Rendering
                     if (arr[j] >= arr[j - 1])
                         break;
 
-#if OPTIMISATION
-                    (arr[j], arr[j - 1]) = (arr[j - 1], arr[j]);
-#else
                     var tmp = arr[j];
                     arr[j] = arr[j - 1];
                     arr[j - 1] = tmp;
-#endif // OPTIMISATION
                 }
             }
         }

@@ -48,11 +48,11 @@ namespace UnityEditor.Rendering.LookDev
         public Stage(string sceneName)
         {
             if (string.IsNullOrEmpty(sceneName))
-#if BUGFIX
+#if SAFETY
                 throw new System.ArgumentNullException(nameof(sceneName));
 #else
                 throw new System.ArgumentNullException("sceneName");
-#endif // BUGFIX
+#endif // SAFETY
 
             m_PreviewScene = EditorSceneManager.NewPreviewScene();
             m_PreviewScene.name = sceneName;
@@ -203,28 +203,16 @@ namespace UnityEditor.Rendering.LookDev
             go.hideFlags = HideFlags.HideAndDontSave;
             go.layer = k_PreviewCullingLayerIndex;
 
-#if OPTIMISATION_TRYGET
-            if (go.TryGetComponent<MeshRenderer>(out var meshRenderer))
-#else
             var meshRenderer = go.GetComponent<MeshRenderer>();
             if (meshRenderer != null)
-#endif // OPTIMISATION_TRYGET
                 meshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
-#if OPTIMISATION_TRYGET
-            if (go.TryGetComponent<SkinnedMeshRenderer>(out var skinnedMeshRenderer))
-#else
             var skinnedMeshRenderer = go.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
-#endif // OPTIMISATION_TRYGET
                 skinnedMeshRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
-#if OPTIMISATION_TRYGET
-            if (go.TryGetComponent<LineRenderer>(out var lineRenderer))
-#else
             var lineRenderer = go.GetComponent<LineRenderer>();
             if (lineRenderer != null)
-#endif // OPTIMISATION_TRYGET
                 lineRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
 
             var volumes = go.GetComponents<UnityEngine.Rendering.Volume>();
@@ -312,6 +300,7 @@ namespace UnityEditor.Rendering.LookDev
 #else
             CleanUp();
 #endif // OPTIMISATION_IDISPOSABLE
+
             GC.SuppressFinalize(this);
         }
 
@@ -425,6 +414,7 @@ namespace UnityEditor.Rendering.LookDev
 #else
             CleanUp();
 #endif // OPTIMISATION_IDISPOSABLE
+
             GC.SuppressFinalize(this);
         }
 

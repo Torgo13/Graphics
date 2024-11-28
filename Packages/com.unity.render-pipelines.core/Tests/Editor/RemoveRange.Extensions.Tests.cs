@@ -24,12 +24,8 @@ namespace UnityEditor.Rendering.Tests
         {
             using (ListPool<int>.Get(out var copy))
             {
-#if OPTIMISATION
-                copy.AddRange(list);
-#else
                 foreach (int integer in list)
                     copy.Add(integer);
-#endif // OPTIMISATION
 
                 if (list.TryRemoveElementsInRange(startIndex, count, out var exception))
                 {

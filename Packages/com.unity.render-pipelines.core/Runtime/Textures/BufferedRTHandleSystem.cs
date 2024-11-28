@@ -78,14 +78,16 @@ namespace UnityEngine.Rendering
                 return null;
 
             Assert.IsTrue(frameIndex >= 0 && frameIndex < handle.Length);
+
+            return handle[frameIndex];
 #else
             if (!m_RTHandles.ContainsKey(bufferId))
                 return null;
 
             Assert.IsTrue(frameIndex >= 0 && frameIndex < m_RTHandles[bufferId].Length);
-#endif // OPTIMISATION
 
             return m_RTHandles[bufferId][frameIndex];
+#endif // OPTIMISATION
         }
 
         /// <summary>
@@ -209,10 +211,9 @@ namespace UnityEngine.Rendering
         }
 
 #if OPTIMISATION_IDISPOSABLE
-        protected virtual void Dispose(bool disposing)
-#else
-        void Dispose(bool disposing)
+        protected virtual
 #endif // OPTIMISATION_IDISPOSABLE
+        void Dispose(bool disposing)
         {
             if (!m_DisposedValue)
             {
@@ -233,6 +234,7 @@ namespace UnityEngine.Rendering
         public void Dispose()
         {
             Dispose(true);
+
 #if OPTIMISATION_IDISPOSABLE
             GC.SuppressFinalize(this);
 #endif // OPTIMISATION_IDISPOSABLE

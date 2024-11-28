@@ -113,13 +113,9 @@ namespace UnityEngine.Rendering.Universal
             {
                 void Swap(int a, int b)
                 {
-#if OPTIMISATION
-                    (data[b], data[a]) = (data[a], data[b]);
-#else
                     var tmp = data[a];
                     data[a] = data[b];
                     data[b] = tmp;
-#endif // OPTIMISATION
                 }
 
                 if (compare(data[end], data[start]) < 0) Swap(start, end);
@@ -521,6 +517,7 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
 #if OPTIMISATION_IDISPOSABLE // SLZ
         private bool disposed = false;
+
         ~LightCookieManager()
         {
             Dispose(false);
@@ -542,6 +539,7 @@ namespace UnityEngine.Rendering.Universal
                 m_AdditionalLightsCookieShaderData?.Dispose();
                 disposed = true;
             }
+
             if (disposing)
             {
                 GC.SuppressFinalize(this);
@@ -971,7 +969,11 @@ namespace UnityEngine.Rendering.Universal
                     // Payload texture is inset
                     var potAtlas = (m_AdditionalLightsCookieAtlas as PowerOfTwoTextureAtlas);
                     var mipPadding = potAtlas == null ? 1 : potAtlas.mipPadding;
+#if OPTIMISATION
                     var paddingSize = (int)Mathf.Pow(2, mipPadding) * 2 * Vector2.one;
+#else
+                    var paddingSize = Vector2.one * (int)Mathf.Pow(2, mipPadding) * 2;
+#endif // OPTIMISATION
                     uvScaleOffset = PowerOfTwoTextureAtlas.GetPayloadScaleOffset(cookieSize, paddingSize, uvScaleOffset);
                 }
                 else

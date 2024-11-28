@@ -10,7 +10,11 @@ namespace UnityEditor.Rendering.Universal
         public UniversalGlobalSettingsPanelProvider()
             : base("Project/Graphics/URP Global Settings")
         {
+#if OPTIMISATION
+            keywords = GetSearchKeywordsFromGUIContentProperties<UniversalRenderPipelineGlobalSettingsUI.Styles>();
+#else
             keywords = GetSearchKeywordsFromGUIContentProperties<UniversalRenderPipelineGlobalSettingsUI.Styles>().ToArray();
+#endif // OPTIMISATION
         }
 
         [SettingsProvider]

@@ -64,7 +64,6 @@ namespace UnityEditor.Rendering
         List<string> m_TexturesToRemove = new List<string>();
         Dictionary<string, Texture> m_TexturesToSet = new Dictionary<string, Texture>();
 
-
         class KeywordFloatRename
         {
             public string keyword;
@@ -357,6 +356,72 @@ namespace UnityEditor.Rendering
             return !shaderNamesToIgnore.Contains(material.shader.name);
         }
 
+        /// <summary>
+        /// Check if the materials in the list are variants of upgradable materials, and logs a infomative message to the user..
+        /// </summary>
+        /// <param name="materialGUIDs">Array of materials GUIDs.</param>
+        /// <param name="upgraders">List or available upgraders.</param>
+        static void LogMaterialVariantMessage(string[] materialGUIDs, List<MaterialUpgrader> upgraders)
+        {
+            List<Material> materials = new List<Material>();
+            foreach (var guid in materialGUIDs)
+                materials.Add(AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid)));
+
+            LogMaterialVariantMessage(materials, upgraders);
+        }
+
+        /// <summary>
+        /// Check if the materials in the list are variants of upgradable materials, and logs a infomative message to the user..
+        /// </summary>
+        /// <param name="objects">Array of objects.</param>
+        /// <param name="upgraders">List or available upgraders.</param>
+        static void LogMaterialVariantMessage(UnityEngine.Object[] objects, List<MaterialUpgrader> upgraders)
+        {
+            Material mat;
+            List<Material> materials = new List<Material>();
+            for (int i = 0; i<objects.Length; i++)
+            {
+                mat = objects[i] as Material;
+                if (mat != null)
+                    materials.Add(mat);
+            }
+
+            LogMaterialVariantMessage(materials, upgraders);
+        }
+
+        /// <summary>
+        /// Check if the materials in the list are variants of upgradable materials, and logs a infomative message to the user..
+        /// </summary>
+        /// <param name="materials">List of materials.</param>
+        /// <param name="upgraders">List or available upgraders.</param>
+        static void LogMaterialVariantMessage(List<Material> materials, List<MaterialUpgrader> upgraders)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Can not upgrade Material Variants, the following assets were skipped:");
+            bool needsLogging = false;
+
+            Material rootMaterial;
+
+            foreach (Material material in materials)
+            {
+                if (material.isVariant)
+                {
+                    rootMaterial = material;
+                    while (rootMaterial.isVariant)
+                        rootMaterial = rootMaterial.parent;
+
+                    if (GetUpgrader(upgraders, rootMaterial) != null)
+                    {
+                        needsLogging = true;
+                        sb.AppendLine($"- <a href=\"{AssetDatabase.GetAssetPath(material)}\" >{material.name}</a>, variant of {material.parent.name} with shader {rootMaterial.shader.name}.");
+                    }
+                }
+            }
+
+            if (needsLogging)
+                Debug.Log(sb.ToString(), null);
+        }
+
 
         private static bool IsNotAutomaticallyUpgradable(List<MaterialUpgrader> upgraders, Material material)
         {
@@ -407,6 +472,8 @@ namespace UnityEditor.Rendering
             var materialAssets = AssetDatabase.FindAssets($"t:{nameof(Material)} glob:\"**/*.mat\"");
             int materialIndex = 0;
 
+            LogMaterialVariantMessage(materialAssets, upgraders);
+
             foreach (var guid in materialAssets)
             {
                 Material material = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid));
@@ -415,6 +482,9 @@ namespace UnityEditor.Rendering
                     break;
 
                 if (!ShouldUpgradeShader(material, shaderNamesToIgnore))
+                    continue;
+
+                if (material.isVariant)
                     continue;
 
                 Upgrade(material, upgraders, flags);
@@ -524,10 +594,13 @@ namespace UnityEditor.Rendering
             }
 
             List<Material> selectedMaterials = new List<Material>(selection.Length);
+
+            LogMaterialVariantMessage(selection, upgraders);
+
             for (int i = 0; i < selection.Length; ++i)
             {
                 Material mat = selection[i] as Material;
-                if (mat != null)
+                if (mat != null && !mat.isVariant)
                     selectedMaterials.Add(mat);
             }
 

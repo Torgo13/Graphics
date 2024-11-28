@@ -72,15 +72,13 @@ namespace UnityEngine.Rendering.Universal
         /// Nearest-Neighbor filtering
         Point,
 
-#if CUSTOM_URP
         /// FidelityFX Super Resolution
-        FSR,
+        FSR
+#if CUSTOM_URP
+        ,
 
         /// Snapdragon Game Super Resolution
         SGSR
-#else
-        /// FidelityFX Super Resolution
-        FSR
 #endif // CUSTOM_URP
     }
 
@@ -1386,11 +1384,11 @@ namespace UnityEngine.Rendering.Universal
         public static bool IsGameCamera(Camera camera)
         {
             if (camera == null)
-#if OPTIMISATION
+#if SAFETY
                 throw new ArgumentNullException(nameof(camera));
 #else
                 throw new ArgumentNullException("camera");
-#endif // OPTIMISATION
+#endif // SAFETY
 
             return camera.cameraType == CameraType.Game || camera.cameraType == CameraType.VR;
         }
@@ -1404,11 +1402,11 @@ namespace UnityEngine.Rendering.Universal
         public static bool IsStereoEnabled(Camera camera)
         {
             if (camera == null)
-#if OPTIMISATION
+#if SAFETY
                 throw new ArgumentNullException(nameof(camera));
 #else
                 throw new ArgumentNullException("camera");
-#endif // OPTIMISATION
+#endif // SAFETY
 
             return IsGameCamera(camera) && (camera.stereoTargetEye == StereoTargetEyeMask.Both);
         }

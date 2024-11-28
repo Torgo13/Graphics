@@ -175,6 +175,7 @@ namespace UnityEngine.Rendering.Universal.UTess
             if (Length != array.Length)
                 throw new ArgumentException($"array.Length ({array.Length}) does not match the Length of this instance ({Length}).", nameof(array));
 #endif
+
 #if SAFETY
 #else
             unsafe

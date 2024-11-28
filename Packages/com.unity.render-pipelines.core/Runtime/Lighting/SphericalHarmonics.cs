@@ -6,10 +6,9 @@ namespace UnityEngine.Rendering
     /// Structure holding Spherical Harmonic L1 coefficient.
     /// </summary>
     [Serializable]
-#if OPTIMISATION_IEQUATABLE
-    public struct SphericalHarmonicsL1 : IEquatable<SphericalHarmonicsL1>
-#else
     public struct SphericalHarmonicsL1
+#if OPTIMISATION_IEQUATABLE
+        : IEquatable<SphericalHarmonicsL1>
 #endif // OPTIMISATION_IEQUATABLE
     {
         /// <summary>

@@ -83,21 +83,17 @@ namespace UnityEngine.Rendering.Universal
         /// </summary>
         _2048 = 2048,
 
-#if CUSTOM_URP
-        /// <summary>
-        /// Use this for 4096x4096 shadow resolution.
-        /// </summary>
-        _4096 = 4096,
-
-        /// <summary>
-        /// Use this for 8192x8192 shadow resolution.
-        /// </summary>
-        _8192 = 8192,
-#else
         /// <summary>
         /// Use this for 4096x4096 shadow resolution.
         /// </summary>
         _4096 = 4096
+#if CUSTOM_URP
+        ,
+
+        /// <summary>
+        /// Use this for 8192x8192 shadow resolution.
+        /// </summary>
+        _8192 = 8192
 #endif // CUSTOM_URP
     }
 
@@ -382,24 +378,19 @@ namespace UnityEngine.Rendering.Universal
         [InspectorName("Nearest-Neighbor")]
         Point,
 
-#if CUSTOM_URP
         /// <summary>
         /// Unity uses the AMD FSR 1.0 technique to perform upscaling.
         /// </summary>
         [InspectorName("FidelityFX Super Resolution 1.0"), Tooltip("If the target device does not support Unity shader model 4.5, Unity falls back to the Automatic option.")]
-        FSR,
+        FSR
+#if CUSTOM_URP
+        ,
 
         /// <summary>
         /// Unity uses the Snapdragon Game Super Resolution technique to perform upscaling.
         /// </summary>
         [InspectorName("Snapdragon Game Super Resolution"), Tooltip("If the target device does not support Unity shader model 4.5, Unity falls back to the Automatic option.")]
         SGSR
-#else
-        /// <summary>
-        /// Unity uses the AMD FSR 1.0 technique to perform upscaling.
-        /// </summary>
-        [InspectorName("FidelityFX Super Resolution 1.0"), Tooltip("If the target device does not support Unity shader model 4.5, Unity falls back to the Automatic option.")]
-        FSR
 #endif // CUSTOM_URP
     }
 
@@ -764,9 +755,6 @@ namespace UnityEngine.Rendering.Universal
         {
             if (m_RendererDataList == null)
                 m_RendererDataList = new ScriptableRendererData[1];
-
-            if (m_DefaultRendererIndex >= m_RendererDataList.Length)
-                m_DefaultRendererIndex = 0;
 
             // If no default data we can't create pipeline instance
             if (m_RendererDataList[m_DefaultRendererIndex] == null)
@@ -1674,7 +1662,7 @@ namespace UnityEngine.Rendering.Universal
             get
             {
 #if UNITY_EDITOR
-                // TODO: When importing project, AssetPreviewUpdater:CreatePreviewForAsset will be called multiple time
+                // TODO: When importing project, AssetPreviewUpdater:CreatePreviewForAsset will be called multiple times
                 // which in turns calls this property to get the default shader.
                 // The property should never return null as, when null, it loads the data using AssetDatabase.LoadAssetAtPath.
                 // However it seems there's an issue that LoadAssetAtPath will not load the asset in some cases. so adding the null check

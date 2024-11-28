@@ -87,6 +87,7 @@ namespace UnityEngine.Rendering
         public void Dispose()
         {
             Dispose(true);
+
 #if OPTIMISATION_IDISPOSABLE
             GC.SuppressFinalize(this);
 #endif // OPTIMISATION_IDISPOSABLE
@@ -362,10 +363,9 @@ namespace UnityEngine.Rendering
         public int GetMaxHeight() { return m_MaxHeights; }
 
 #if OPTIMISATION_IDISPOSABLE
-        protected virtual void Dispose(bool disposing)
-#else
-        void Dispose(bool disposing)
+        protected virtual
 #endif // OPTIMISATION_IDISPOSABLE
+        void Dispose(bool disposing)
         {
             if (disposing)
             {

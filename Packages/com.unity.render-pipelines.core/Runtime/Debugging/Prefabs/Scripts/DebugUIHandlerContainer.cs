@@ -60,12 +60,8 @@ namespace UnityEngine.Rendering.UI
                 if (!t.gameObject.activeInHierarchy)
                     continue;
 
-#if OPTIMISATION_TRYGET
-                if (t.TryGetComponent<DebugUIHandlerWidget>(out var c))
-#else
                 var c = t.GetComponent<DebugUIHandlerWidget>();
                 if (c != null)
-#endif // OPTIMISATION_TRYGET
                     list.Add(c);
             }
 

@@ -133,7 +133,11 @@ namespace UnityEngine.Rendering.Universal
             m_Materials = new MaterialLibrary(data);
 
             // Only two components are needed for edge render texture, but on some vendors four components may be faster.
+#if OPTIMISATION
             if (SystemInfo.IsFormatSupported(GraphicsFormat.R8G8_UNorm, FormatUsage.Render) && SystemInfo.graphicsDeviceVendor.Contains("arm", System.StringComparison.InvariantCultureIgnoreCase))
+#else
+            if (SystemInfo.IsFormatSupported(GraphicsFormat.R8G8_UNorm, FormatUsage.Render) && SystemInfo.graphicsDeviceVendor.ToLowerInvariant().Contains("arm"))
+#endif // OPTIMISATION
                 m_SMAAEdgeFormat = GraphicsFormat.R8G8_UNorm;
             else
                 m_SMAAEdgeFormat = GraphicsFormat.R8G8B8A8_UNorm;

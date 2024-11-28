@@ -110,20 +110,9 @@ namespace UnityEngine.Rendering
             }
 
             protected virtual void Dispose(bool disposing)
-            {
-                RenderTexture.ReleaseTemporary(sceneSDF);
-                RenderTexture.ReleaseTemporary(sceneSDF2);
-                RenderTexture.ReleaseTemporary(dummyRenderTarget);
-                probeVolumesBuffer.Release();
-
-                for (int i = 0; i <= maxSubdivisionLevelInSubCell; i++)
-                {
-                    bricksBuffers[i].Release();
-                    readbackCountBuffers[i].Release();
-                }
-            }
 #else
             public void Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
             {
                 RenderTexture.ReleaseTemporary(sceneSDF);
                 RenderTexture.ReleaseTemporary(sceneSDF2);
@@ -136,7 +125,6 @@ namespace UnityEngine.Rendering
                     readbackCountBuffers[i].Release();
                 }
             }
-#endif // OPTIMISATION_IDISPOSABLE
         }
 
         static readonly int _BricksToClear = Shader.PropertyToID("_BricksToClear");
@@ -289,7 +277,6 @@ namespace UnityEngine.Rendering
 #else
                     Vector3 center = (Vector3)parentSubCellPos * minBrickSize + Vector3.one * brickSize * minBrickSize / 2.0f;
                     Bounds parentAABB = new Bounds(center, Vector3.one * brickSize * minBrickSize);
-
 #endif // OPTIMISATION
 
                     bool generateParentBrick = false;

@@ -120,6 +120,30 @@ namespace UnityEngine.Rendering.Universal
                 tangents.Add(Vector4.zero);
         }
 
+#if OPTIMISATION_LISTPOOL
+        static internal Bounds CalculateLocalBounds(List<Vector3> inVertices)
+        {
+            if (inVertices.Count <= 0)
+                return new Bounds(Vector3.zero, Vector3.zero);
+
+            Vector2 minVec = Vector2.positiveInfinity;
+            Vector2 maxVec = Vector2.negativeInfinity;
+
+            int inVerticesLength = inVertices.Count;
+
+            // Add outline vertices
+            for (int i = 0; i < inVerticesLength; i++)
+            {
+                Vector2 vertex = new Vector2(inVertices[i].x, inVertices[i].y);
+
+                minVec = Vector2.Min(minVec, vertex);
+                maxVec = Vector2.Max(maxVec, vertex);
+            }
+
+            return new Bounds { max = maxVec, min = minVec };
+        }
+#endif // OPTIMISATION_LISTPOOL
+
         static internal Bounds CalculateLocalBounds(Vector3[] inVertices)
         {
             if (inVertices.Length <= 0)
@@ -144,10 +168,17 @@ namespace UnityEngine.Rendering.Universal
 
         public static Bounds GenerateShadowMesh(Mesh mesh, Vector3[] shapePath)
         {
+#if OPTIMISATION_LISTPOOL
+            using var _0 = UnityEngine.Pool.ListPool<Vector3>.Get(out var vertices);
+            using var _1 = UnityEngine.Pool.ListPool<int>.Get(out var triangles);
+            using var _2 = UnityEngine.Pool.ListPool<Vector4>.Get(out var tangents);
+            using var _3 = UnityEngine.Pool.ListPool<Color>.Get(out var extrusion);
+#else
             List<Vector3> vertices = new List<Vector3>();
             List<int> triangles = new List<int>();
             List<Vector4> tangents = new List<Vector4>();
             List<Color> extrusion = new List<Color>();
+#endif // OPTIMISATION_LISTPOOL
 
             // Create interior geometry
             int pointCount = shapePath.Length;
@@ -167,9 +198,15 @@ namespace UnityEngine.Rendering.Universal
             tessI.AddContour(inputs, ContourOrientation.Original);
             tessI.Tessellate(WindingRule.EvenOdd, ElementType.Polygons, 3, InterpCustomVertexData);
 
+#if OPTIMISATION
+            var indicesI = tessI.Elements.Select(i => i);
+            var verticesI = tessI.Vertices.Select(v => new Vector3(v.Position.X, v.Position.Y, 0));
+            var extrusionI = tessI.Vertices.Select(v => new Color(((Color)v.Data).r, ((Color)v.Data).g, ((Color)v.Data).b, ((Color)v.Data).a));
+#else
             var indicesI = tessI.Elements.Select(i => i).ToArray();
             var verticesI = tessI.Vertices.Select(v => new Vector3(v.Position.X, v.Position.Y, 0)).ToArray();
             var extrusionI = tessI.Vertices.Select(v => new Color(((Color)v.Data).r, ((Color)v.Data).g, ((Color)v.Data).b, ((Color)v.Data).a)).ToArray();
+#endif // OPTIMISATION
 
             vertices.AddRange(verticesI);
             triangles.AddRange(indicesI);
@@ -177,11 +214,25 @@ namespace UnityEngine.Rendering.Universal
 
             InitializeTangents(vertices.Count, tangents);
 
+#if OPTIMISATION_LISTPOOL
+            using var _4 = UnityEngine.Pool.ListPool<Edge>.Get(out var edges);
+#else
             List<Edge> edges = new List<Edge>();
+#endif // OPTIMISATION_LISTPOOL
+
             PopulateEdgeArray(vertices, triangles, edges);
             SortEdges(edges);
             CreateShadowTriangles(vertices, extrusion, triangles, tangents, edges);
 
+#if OPTIMISATION_LISTPOOL
+            mesh.Clear();
+            mesh.SetVertices(vertices);
+            mesh.SetTriangles(triangles, 0);
+            mesh.SetTangents(tangents);
+            mesh.SetColors(extrusion);
+
+            return CalculateLocalBounds(vertices);
+#else
             Color[] finalExtrusion = extrusion.ToArray();
             Vector3[] finalVertices = vertices.ToArray();
             int[] finalTriangles = triangles.ToArray();
@@ -194,6 +245,7 @@ namespace UnityEngine.Rendering.Universal
             mesh.colors = finalExtrusion;
 
             return CalculateLocalBounds(finalVertices);
+#endif // OPTIMISATION_LISTPOOL
         }
     }
 }

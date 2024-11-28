@@ -119,10 +119,8 @@ namespace UnityEngine.Experimental.Rendering
         /// <param name="msaaSamples"></param>
         public static void SetDisplayMSAASamples(MSAASamples msaaSamples)
         {
-#if ENABLE_VR && ENABLE_XR_MODULE
             if (s_MSAASamples == msaaSamples)
                 return;
-#endif
 
             s_MSAASamples = msaaSamples;
 

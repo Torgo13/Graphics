@@ -381,17 +381,13 @@ namespace UnityEditor.Rendering.LookDev
             }
 
             protected virtual void Dispose(bool disposing)
-            {
-                if (windowContent.Contains(cursorFollower))
-                    windowContent.Remove(cursorFollower);
-            }
 #else
             public void Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
             {
                 if (windowContent.Contains(cursorFollower))
                     windowContent.Remove(cursorFollower);
             }
-#endif // OPTIMISATION_IDISPOSABLE
         }
 
         class EnvironmentPreviewDragger : Manipulator

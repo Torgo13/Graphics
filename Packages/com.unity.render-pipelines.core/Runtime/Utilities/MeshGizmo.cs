@@ -112,17 +112,11 @@ namespace UnityEngine.Rendering
         }
 
         protected virtual void Dispose(bool disposing)
-        {
-            if (mesh != null)
-            {
-                CoreUtils.Destroy(mesh);
-            }
-        }
 #else
         public void Dispose()
+#endif // OPTIMISATION_IDISPOSABLE
         {
             CoreUtils.Destroy(mesh);
         }
-#endif // OPTIMISATION_IDISPOSABLE
     }
 }

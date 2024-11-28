@@ -1,5 +1,3 @@
-#define OPTIMISATION
-
 using System;
 using System.Collections.Generic;
 using UnityEngine.Experimental.Rendering;
@@ -24,22 +22,19 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         public void Setup(RTHandle colorAttachment, RTHandle renderingLayersTexture, RTHandle depthAttachment)
         {
+#if SAFETY
             if (colorAttachment == null)
-#if SAFETY
                 throw new ArgumentException("Color attachment can not be null", nameof(colorAttachment));
-#else
-                throw new ArgumentException("Color attachment can not be null", "colorAttachment");
-#endif // SAFETY
             if (renderingLayersTexture == null)
-#if SAFETY
                 throw new ArgumentException("Rendering layers attachment can not be null", nameof(renderingLayersTexture));
-#else
-                throw new ArgumentException("Rendering layers attachment can not be null", "renderingLayersTexture");
-#endif // SAFETY
             if (depthAttachment == null)
-#if SAFETY
                 throw new ArgumentException("Depth attachment can not be null", nameof(depthAttachment));
 #else
+            if (colorAttachment == null)
+                throw new ArgumentException("Color attachment can not be null", "colorAttachment");
+            if (renderingLayersTexture == null)
+                throw new ArgumentException("Rendering layers attachment can not be null", "renderingLayersTexture");
+            if (depthAttachment == null)
                 throw new ArgumentException("Depth attachment can not be null", "depthAttachment");
 #endif // SAFETY
 

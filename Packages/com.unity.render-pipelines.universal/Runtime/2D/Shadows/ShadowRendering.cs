@@ -158,6 +158,7 @@ namespace UnityEngine.Rendering.Universal
 #else
             cmdBuffer.SetGlobalTexture("_ShadowTex", m_LightInputTextures[textureIndex]);
 #endif // OPTIMISATION_SHADERPARAMS
+
             cmdBuffer.SetGlobalColor(k_ShadowColorMaskID, k_ColorLookup[colorChannel]);
             cmdBuffer.SetGlobalFloat(k_ShadowIntensityID, 1 - light.shadowIntensity);
             cmdBuffer.SetGlobalFloat(k_ShadowVolumeIntensityID, 1 - light.shadowVolumeIntensity);

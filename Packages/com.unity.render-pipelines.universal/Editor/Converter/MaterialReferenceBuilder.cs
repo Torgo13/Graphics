@@ -153,15 +153,20 @@ namespace UnityEditor.Rendering.Universal
             // if there is a sharedMaterial property or sharedMaterials property, remove the property that will leak materials
             var sharedMaterialProps =
 #if OPTIMISATION
-                materialProps.Where(prop => prop.Name.Contains("shared", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                materialProps.Where(prop => prop.Name.Contains("shared", StringComparison.InvariantCultureIgnoreCase));
 #else
                 materialProps.Where(prop => prop.Name.ToLowerInvariant().Contains("shared")).ToList();
 #endif // OPTIMISATION
 
             var propsToRemove = sharedMaterialProps
+#if OPTIMISATION
+                .Select(prop => prop.Name.ToLowerInvariant().Replace("shared", string.Empty));
+            materialProps.RemoveAll(prop => propsToRemove.Contains(prop.Name, StringComparer.InvariantCultureIgnoreCase));
+#else
                 .Select(prop => prop.Name.ToLowerInvariant().Replace("shared", string.Empty))
                 .ToList();
             materialProps.RemoveAll(prop => propsToRemove.Contains(prop.Name.ToLowerInvariant()));
+#endif // OPTIMISATION
 
             // also remove any property which has no setter
             materialProps.RemoveAll(prop => prop.SetMethod == null);

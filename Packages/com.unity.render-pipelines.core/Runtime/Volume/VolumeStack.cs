@@ -47,7 +47,12 @@ namespace UnityEngine.Rendering
 
             requiresReset = true;
 
+#if OPTIMISATION_LISTPOOL
+            using var _0 = UnityEngine.Pool.ListPool<(VolumeParameter parameter, VolumeParameter defaultValue)>.Get(out var defaultParametersList);
+#else
             List<(VolumeParameter parameter, VolumeParameter defaultValue)> defaultParametersList = new();
+#endif // OPTIMISATION_LISTPOOL
+
             foreach (var defaultVolumeComponent in componentDefaultStates)
             {
                 var type = defaultVolumeComponent.GetType();
