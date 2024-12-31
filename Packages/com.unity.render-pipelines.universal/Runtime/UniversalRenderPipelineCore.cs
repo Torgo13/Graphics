@@ -1396,6 +1396,19 @@ namespace UnityEngine.Rendering.Universal
             get => GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
         }
 
+        #region HDRP
+
+        /// <summary>
+        /// Returns the current render pipeline asset for the current quality setting.
+        /// If no render pipeline asset is assigned in QualitySettings, then returns the one assigned in GraphicsSettings.
+        /// </summary>
+        public static UniversalRenderPipelineAsset m_asset
+        {
+            get => GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+        }
+
+        #endregion // HDRP
+
         Comparison<Camera> cameraComparison = (camera1, camera2) => { return (int)camera1.depth - (int)camera2.depth; };
 #if UNITY_2021_1_OR_NEWER
         void SortCameras(List<Camera> cameras)
